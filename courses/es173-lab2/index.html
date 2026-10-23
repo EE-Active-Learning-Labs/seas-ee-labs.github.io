@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ES173 Lab 2 Student Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crimson:#A51C30;--crimson-ink:#8C1527;--on-crimson:#FFFFFF;
+  --ink:#161616;--ink-2:#4B4B4B;--paper:#FFFFFF;--mist:#F4F4F4;--rule:#DCDCDC;--rule-2:#B5B5B5;
+  --n:#1F5FA6;--p:#6B3FA0;--ok:#1E7A4B;--focus:#1F5FA6;
+  --caution-bg:#FFF5DE;--caution-ink:#553600;--caution-rule:#C98A1B;
+  --stop-bg:#FBE8EB;--stop-ink:#6A0E1E;--stop-rule:#A51C30;
+  --think-bg:#EDF3FB;--think-rule:#1F5FA6;
+  --hero:#151515;--hero-ink:#F4F4F4;--hero-2:#ABABAB;--beam:#FF2E48;--hero-n:#7FB2F0;--hero-p:#C3A2F2;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Public Sans','Helvetica Neue',Arial,system-ui,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --crimson:#E25A6E;--crimson-ink:#F08797;--on-crimson:#1A0A0D;
+    --ink:#ECECEC;--ink-2:#B3B3B3;--paper:#1B1B1B;--mist:#121212;--rule:#303030;--rule-2:#4A4A4A;
+    --n:#6CA6E8;--p:#B28CE8;--ok:#5CC48E;--focus:#8AB4F8;
+    --caution-bg:#34270C;--caution-ink:#F2D79E;--caution-rule:#8A6420;
+    --stop-bg:#3A1219;--stop-ink:#F6C3CB;--stop-rule:#E25A6E;
+    --think-bg:#14202D;--think-rule:#6CA6E8;
+    --hero:#0B0B0B;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+    --crimson:#E25A6E;--crimson-ink:#F08797;--on-crimson:#1A0A0D;
+    --ink:#ECECEC;--ink-2:#B3B3B3;--paper:#1B1B1B;--mist:#121212;--rule:#303030;--rule-2:#4A4A4A;
+    --n:#6CA6E8;--p:#B28CE8;--ok:#5CC48E;--focus:#8AB4F8;
+    --caution-bg:#34270C;--caution-ink:#F2D79E;--caution-rule:#8A6420;
+    --stop-bg:#3A1219;--stop-ink:#F6C3CB;--stop-rule:#E25A6E;
+    --think-bg:#14202D;--think-rule:#6CA6E8;
+    --hero:#0B0B0B;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:auto;scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+@media(min-width:1100px){html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 24px)}}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 var(--sans);-webkit-text-size-adjust:100%;font-feature-settings:"tnum" 0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:60}
+a{color:var(--crimson);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:3px}
+.skip{position:absolute;left:-9999px;top:0}
+.skip:focus{left:12px;top:12px;z-index:99;background:var(--paper);padding:8px 14px}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.12;margin:0 0 .45em;letter-spacing:-.012em}
+h2{font-size:clamp(1.75rem,3.2vw,2.4rem)}
+h3{font-size:1.32rem;font-weight:600}
+h4{font-family:var(--sans);font-size:1rem;font-weight:700;letter-spacing:0;margin-bottom:.35em}
+p{margin:0 0 1em;max-width:68ch}
+ul,ol{padding-left:1.2em;max-width:68ch}
+li{margin-bottom:.35em}
+
+/* site header */
+.site{border-top:6px solid var(--crimson);background:var(--paper);border-bottom:1px solid var(--rule)}
+.site-in{max-width:1280px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;flex-direction:column;text-decoration:none;color:var(--ink);line-height:1.2}
+.brand .b1{font-size:.78rem;color:var(--ink-2)}
+.brand .b2{font-family:var(--serif);font-weight:600;font-size:1.35rem}
+.site .tag{font-size:.85rem;font-weight:700;color:var(--crimson);border:1.5px solid var(--crimson);padding:4px 10px;border-radius:2px;white-space:nowrap}
+
+/* hero */
+.hero{background:var(--hero);color:var(--hero-ink);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:4px;background:var(--crimson)}
+.hero-in{max-width:1280px;margin:0 auto;padding:44px 24px 56px;display:grid;gap:36px;grid-template-columns:1fr}
+@media(min-width:960px){.hero-in{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);align-items:center;padding:64px 24px 76px}}
+.crumb{font-size:.86rem;color:var(--hero-2);margin-bottom:22px}
+.crumb a{color:var(--hero-ink)}
+.hero h1{font-size:clamp(2.3rem,5.4vw,4.1rem);font-weight:500;letter-spacing:-.02em;margin-bottom:.35em;max-width:16ch}
+.hero-lede{font-size:1.16rem;color:#D6D6D6;max-width:52ch}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:28px 0 30px;border-top:1px solid #3A3A3A;max-width:560px}
+@media(min-width:560px){.facts{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.facts div{padding:12px 14px 12px 0;border-bottom:1px solid #3A3A3A}
+.facts dt{font-size:.8rem;color:var(--hero-2)}
+.facts dd{margin:2px 0 0;font-weight:700}
+.hero-fig{margin:0}
+.hero-fig svg{display:block;width:100%;height:auto}
+.hero-fig figcaption{font-size:.82rem;color:var(--hero-2);margin-top:8px}
+
+/* buttons */
+.btn,button{font:inherit;font-weight:700;font-size:.97rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 20px;border-radius:2px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);text-decoration:none;transition:background .15s,color .15s,border-color .15s}
+.btn:hover,button:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.btn.primary,button.primary{background:var(--crimson);border-color:var(--crimson);color:var(--on-crimson)}
+.btn.primary:hover,button.primary:hover:not(:disabled){background:var(--crimson-ink);border-color:var(--crimson-ink);color:var(--on-crimson)}
+.hero .btn{border-color:var(--hero-ink);color:var(--hero-ink)}
+.hero .btn:hover{background:var(--hero-ink);color:var(--hero)}
+.hero .btn.primary{border-color:var(--crimson);color:var(--on-crimson)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.sm{min-height:40px;padding:6px 14px;font-size:.9rem}
+
+/* layout */
+.layout{max-width:1280px;margin:0 auto;padding:0 24px}
+@media(min-width:1100px){.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:56px}}
+.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--paper);border-bottom:1px solid var(--rule);margin:0 -24px;padding:8px 12px}
+.rail-h{display:none}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:none}
+.rail ol::-webkit-scrollbar{display:none}
+.rail li{margin:0}
+.rail a{display:flex;align-items:center;gap:8px;white-space:nowrap;text-decoration:none;color:var(--ink-2);padding:8px 12px;border-radius:2px;font-size:.92rem}
+.rail a:hover{color:var(--ink);background:var(--mist)}
+.rail .rn{font-family:var(--serif);font-weight:600;color:var(--ink-2);min-width:1.1em}
+.rail .rc{display:none;font-size:.78rem;color:var(--ink-2);margin-left:auto}
+.rail li.active a{color:var(--ink);background:var(--mist);box-shadow:inset 3px 0 0 var(--crimson)}
+.rail li.complete .rn{color:var(--ok)}
+.rail li.mine .rt::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--crimson);margin-left:8px;vertical-align:2px}
+.rail-prog{display:none}
+@media(min-width:1100px){
+  .rail{top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;margin:48px 0 0;padding:0;border:0;background:none;max-height:calc(100vh - 48px);overflow:auto}
+  .rail-h{display:block;font-family:var(--serif);font-weight:600;font-size:1.15rem;margin:0 0 10px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+  .rail ol{flex-direction:column;gap:0;overflow:visible}
+  .rail a{white-space:normal;padding:9px 10px;border-bottom:1px solid var(--rule)}
+  .rail .rc{display:inline}
+  .rail-prog{display:block;margin-top:18px;font-size:.85rem;color:var(--ink-2)}
+  .rail-prog .bar{height:4px;background:var(--rule);margin-top:6px}
+  .rail-prog .bar i{display:block;height:100%;background:var(--crimson);width:0;transition:width .3s}
+}
+main{min-width:0;padding-bottom:40px}
+
+/* chapters */
+.chapter{padding:56px 0 24px;border-bottom:1px solid var(--rule)}
+.ch-head{display:grid;grid-template-columns:auto 1fr;gap:4px 20px;align-items:start;margin-bottom:26px}
+.ch-num{font-family:var(--serif);font-size:3.2rem;line-height:.9;color:var(--crimson);font-weight:500;min-width:1.2ch}
+.ch-head h2{margin-bottom:.2em}
+.ch-sum{color:var(--ink-2);margin:0;font-size:1.05rem}
+.mine-badge{display:none;grid-column:2;justify-self:start;margin-top:8px;font-size:.82rem;font-weight:700;color:var(--on-crimson);background:var(--crimson);padding:3px 10px;border-radius:2px}
+.chapter.mine .mine-badge{display:inline-block}
+.role-line{font-size:.92rem;color:var(--ink-2);margin:-10px 0 18px}
+.role-line b{color:var(--ink)}
+
+/* checklist steps */
+ol.steps,ul.checks{list-style:none;margin:0 0 1.6em;padding:0;counter-reset:s;max-width:74ch;border-top:1px solid var(--rule)}
+ol.steps>li,ul.checks>li{margin:0;border-bottom:1px solid var(--rule)}
+ol.steps>li{counter-increment:s}
+.ckl{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:13px 8px;cursor:pointer;transition:background .15s}
+ol.steps .ckl{grid-template-columns:1.6em auto 1fr}
+ol.steps .ckl::before{content:counter(s);font-family:var(--serif);font-weight:600;color:var(--ink-2);font-size:1.05rem;line-height:1.5}
+.ckl:hover{background:var(--mist)}
+input.ck{appearance:none;-webkit-appearance:none;width:22px;height:22px;margin:2px 0 0;border:2px solid var(--rule-2);border-radius:3px;background:var(--paper);display:grid;place-content:center;cursor:pointer;transition:background .15s,border-color .15s}
+input.ck::after{content:"";width:11px;height:6px;border-left:2.5px solid var(--on-crimson);border-bottom:2.5px solid var(--on-crimson);transform:translate(0,-1px) rotate(-45deg) scale(0);transition:transform .15s}
+input.ck:checked{background:var(--crimson);border-color:var(--crimson)}
+input.ck:checked::after{transform:translate(0,-1px) rotate(-45deg) scale(1)}
+input.ck:checked~.tx{color:var(--ink-2)}
+.tx .sub{display:block;font-size:.92rem;color:var(--ink-2);margin-top:3px}
+
+/* callouts */
+.callout{border-left:4px solid;padding:16px 20px;margin:0 0 1.5em;max-width:74ch}
+.callout h4{margin-top:0}
+.callout>:last-child{margin-bottom:0}
+.callout p{max-width:none}
+.callout.note{background:var(--mist);border-color:var(--ink)}
+.callout.caution{background:var(--caution-bg);border-color:var(--caution-rule);color:var(--caution-ink)}
+.callout.stop{background:var(--stop-bg);border-color:var(--stop-rule);color:var(--stop-ink)}
+.callout.think{background:var(--think-bg);border-color:var(--think-rule)}
+
+/* panels and grids */
+.panel{background:var(--mist);padding:24px;margin-bottom:24px}
+.panel>:last-child{margin-bottom:0}
+.panel h3{margin-top:0}
+.cards{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-bottom:28px;grid-template-columns:1fr}
+@media(min-width:720px){.cards.c2{grid-template-columns:repeat(2,1fr)}.cards.c3{grid-template-columns:repeat(3,1fr)}}
+.cards>div{background:var(--paper);padding:22px}
+.cards h3{font-size:1.18rem;margin-top:0}
+.cards p:last-child{margin-bottom:0}
+.kicker{display:block;font-size:.84rem;font-weight:700;color:var(--crimson);margin-bottom:6px}
+
+/* forms */
+label.f{display:block;font-weight:700;font-size:.92rem;margin:0 0 6px}
+input[type=text],input[type=number],input[type=date],select,textarea{font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--rule-2);border-radius:2px;padding:10px 12px;max-width:100%;min-height:46px}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+textarea{width:100%;min-height:110px;resize:vertical;line-height:1.5}
+.row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-bottom:16px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1.5px solid var(--ink);border-radius:2px}
+.seg button{border:0;border-radius:0;min-height:44px}
+.seg button+button{border-left:1.5px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+/* tables */
+.tw{overflow-x:auto;margin-bottom:1.6em;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.96rem}
+th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+thead th{border-bottom:2px solid var(--ink);font-weight:700;white-space:nowrap}
+tbody th{font-weight:700}
+table.wide{min-width:680px}
+.spec{max-width:620px}
+.spec td:first-child{color:var(--ink-2);width:45%}
+.spec td:last-child{font-weight:700}
+
+/* details */
+details.acc{border-top:1px solid var(--rule);max-width:78ch}
+details.acc:last-of-type{border-bottom:1px solid var(--rule)}
+details.acc summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 4px;font-family:var(--serif);font-weight:600;font-size:1.22rem}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"";width:12px;height:12px;border-right:2px solid var(--crimson);border-bottom:2px solid var(--crimson);transform:rotate(45deg) translateY(-3px);transition:transform .2s;flex:none}
+details.acc[open] summary::after{transform:rotate(-135deg) translateY(-3px)}
+details.acc>div{padding:0 4px 18px}
+
+/* chart */
+.chart svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule)}
+.chart text{fill:var(--ink-2);font:12px var(--sans)}
+.chart text.t{fill:var(--ink);font-weight:700}
+.chart .grid{stroke:var(--rule);stroke-width:1}
+.chart .axis{stroke:var(--ink);stroke-width:1.5}
+.legend{display:flex;gap:20px;flex-wrap:wrap;margin:10px 0;font-size:.92rem}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+.res{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:14px}
+.res>div{background:var(--paper);padding:16px 18px}
+.res .big{font:500 2rem/1.1 var(--serif);display:block;margin:4px 0}
+.datatbl input{width:110px;min-height:40px;padding:6px 10px}
+.muted{color:var(--ink-2)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--mist);padding:3px 7px;border-radius:2px;word-break:break-all}
+
+/* footer */
+.foot{background:var(--hero);color:var(--hero-2);margin-top:64px;border-top:4px solid var(--crimson)}
+.foot-in{max-width:1280px;margin:0 auto;padding:40px 24px 48px;display:grid;gap:24px;grid-template-columns:1fr;font-size:.92rem}
+@media(min-width:800px){.foot-in{grid-template-columns:1.2fr 1fr 1fr}}
+.foot b{display:block;color:var(--hero-ink);font-family:var(--serif);font-size:1.15rem;font-weight:600;margin-bottom:6px}
+.foot a{color:var(--hero-ink)}
+.foot p{margin:0 0 .4em}
+
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
+@media print{.rail,.site,body::before,button{display:none!important}.hero{background:none;color:#000}.layout{display:block}}
+input.ck-plain{appearance:none;-webkit-appearance:none;width:22px;height:22px;margin:2px 0 0;border:2px solid var(--rule-2);border-radius:3px;background:var(--paper);display:grid;place-content:center;cursor:pointer}
+input.ck-plain::after{content:"";width:11px;height:6px;border-left:2.5px solid var(--paper);border-bottom:2.5px solid var(--paper);transform:translate(0,-1px) rotate(-45deg) scale(0);transition:transform .15s}
+input.ck-plain:checked{background:var(--ink);border-color:var(--ink)}
+input.ck-plain:checked::after{transform:translate(0,-1px) rotate(-45deg) scale(1)}
+.beam{stroke:#FF2E48;stroke-width:3;stroke-linecap:round;stroke-dasharray:116;stroke-dashoffset:0;animation:draw 1s .5s cubic-bezier(.3,.7,.2,1) backwards}
+.beam.glow{stroke-width:9;opacity:.55}
+.spot{animation:fade .6s 1.4s ease-out backwards}
+@keyframes draw{from{stroke-dashoffset:116}to{stroke-dashoffset:0}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+#photonOut{margin:0}
+#photonOut .big{display:block;font:500 2.4rem/1.1 var(--serif);margin-bottom:4px}
+.timer{display:grid;gap:28px;align-items:center;grid-template-columns:1fr;background:var(--mist);padding:28px;margin:8px 0 0;border-top:4px solid var(--crimson)}
+@media(min-width:720px){.timer{grid-template-columns:240px 1fr}}
+.ring{position:relative;width:240px;max-width:100%;margin:0 auto}
+.ring svg{width:100%;height:auto;display:block;transform:rotate(-90deg)}
+.ring .trk{fill:none;stroke:var(--rule);stroke-width:10}
+.ring .arc{fill:none;stroke:var(--crimson);stroke-width:10;stroke-linecap:butt;stroke-dasharray:603.19;stroke-dashoffset:0;transition:stroke-dashoffset .25s linear}
+.ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.disp{font:500 3.4rem/1 var(--serif);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ring-sub{font-size:.88rem;color:var(--ink-2);margin-top:6px}
+.timer-side h3{margin-top:0}
+.tstat{font-weight:700;min-height:1.6em;margin:0 0 6px}
+.timer.alarm .disp,.timer.alarm .tstat{color:var(--crimson)}
+.timer.alarm{animation:alarm 1s steps(2) 8}
+@keyframes alarm{50%{background:var(--stop-bg)}}
+.names{display:grid;gap:10px}
+.names>div{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:12px;align-items:center}
+@media(max-width:560px){.names>div{grid-template-columns:1fr auto}.names>div>span{grid-column:1/-1}}
+.qlist{border-top:2px solid var(--ink)}
+.q{display:grid;grid-template-columns:76px 1fr;gap:18px;padding:22px 0;border-bottom:1px solid var(--rule)}
+.q-pts{font:500 2.4rem/1 var(--serif);color:var(--crimson)}
+.q-pts small{display:block;font:700 .78rem var(--sans);color:var(--ink-2);margin-top:4px}
+.q h3{margin-bottom:.3em}
+.q p{margin-bottom:.5em}
+.q .hint{color:var(--ink-2);font-size:.95rem;margin:0}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the walkthrough</a>
+<header class="site"><div class="site-in">
+  <a class="brand" href="https://seas.harvard.edu/active-learning-labs" target="_blank" rel="noopener"><span class="b1">Harvard John A. Paulson School of Engineering and Applied Sciences</span><span class="b2">Active Learning Labs</span></a>
+  <a class="tag" style="text-decoration:none" href="../../">Back to EE ALL site</a>
+</div></header>
+
+<section class="hero" aria-labelledby="h1">
+  <div class="hero-in">
+    <div>
+      <p class="crumb"><a href="https://seas.harvard.edu/active-learning-labs" target="_blank" rel="noopener">Active Learning Labs</a> / Electrical Engineering / ES173 Introduction to Electronic and Photonic Devices</p>
+      <h1 id="h1">Etching gallium arsenide with light</h1>
+      <p class="hero-lede">Two GaAs samples sit in dilute acid under a red laser. One is n-type and one is p-type. By the end of today you will know which one the light etched, how fast, and why.</p>
+      <dl class="facts">
+        <div><dt>Team</dt><dd>Three roles</dd></div>
+        <div><dt>Etch time</dt><dd>15 to 60 min</dd></div>
+        <div><dt>Report</dt><dd>One per group</dd></div>
+        <div><dt>Measure at</dt><dd>CNS LL2.226</dd></div>
+      </dl>
+      <div class="row" style="margin:0"><a class="btn primary" href="#c-start">Start the walkthrough</a><a class="btn" href="#c-safety">Read safety first</a></div>
+    </div>
+    <figure class="hero-fig">
+      <svg viewBox="50 28 540 272" role="img" aria-label="Schematic. Two red lasers clamped to a stand shine down into two petri dishes. The left dish holds n-type GaAs, the right dish holds p-type GaAs.">
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+          <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#2B2B2B"/><stop offset=".45" stop-color="#5A5A5A"/><stop offset="1" stop-color="#262626"/></linearGradient>
+          <linearGradient id="wafer" x1="0" x2="1"><stop offset="0" stop-color="#4A525A"/><stop offset=".5" stop-color="#8C96A0"/><stop offset="1" stop-color="#4A525A"/></linearGradient>
+        </defs>
+        <rect x="70" y="252" width="500" height="14" rx="2" fill="#2A2A2A"/>
+        <rect x="316" y="36" width="8" height="218" fill="url(#metal)"/>
+        <rect x="186" y="70" width="268" height="7" fill="url(#metal)"/>
+        <rect x="190" y="62" width="22" height="62" rx="4" fill="url(#metal)" stroke="#6A6A6A"/>
+        <rect x="430" y="62" width="22" height="62" rx="4" fill="url(#metal)" stroke="#6A6A6A"/>
+        <rect x="196" y="120" width="10" height="5" fill="#A51C30"/><rect x="436" y="120" width="10" height="5" fill="#A51C30"/>
+        <g class="beamg">
+          <line class="beam glow" x1="201" y1="125" x2="201" y2="240" filter="url(#glow)"/>
+          <line class="beam glow" x1="441" y1="125" x2="441" y2="240" filter="url(#glow)"/>
+          <line class="beam" x1="201" y1="125" x2="201" y2="240"/>
+          <line class="beam" x1="441" y1="125" x2="441" y2="240"/>
+        </g>
+        <path d="M150 222 L155 249 H247 L252 222 Z" fill="#7FB2F0" fill-opacity=".14"/>
+        <path d="M390 222 L395 249 H487 L492 222 Z" fill="#C3A2F2" fill-opacity=".14"/>
+        <path d="M146 212 L154 250 H248 L256 212" fill="none" stroke="#9A9A9A" stroke-width="1.6"/>
+        <path d="M386 212 L394 250 H488 L496 212" fill="none" stroke="#9A9A9A" stroke-width="1.6"/>
+        <rect x="170" y="241" width="62" height="7" fill="url(#wafer)"/>
+        <rect x="410" y="241" width="62" height="7" fill="url(#wafer)"/>
+        <ellipse class="spot" cx="201" cy="241" rx="11" ry="3" fill="#FF2E48" filter="url(#glow)"/>
+        <ellipse class="spot" cx="441" cy="241" rx="11" ry="3" fill="#FF2E48" filter="url(#glow)"/>
+        <text x="201" y="50" text-anchor="middle" fill="#F4F4F4" font-size="14" font-weight="700" font-family="Public Sans, Arial, sans-serif">635 nm</text>
+        <text x="441" y="50" text-anchor="middle" fill="#F4F4F4" font-size="14" font-weight="700" font-family="Public Sans, Arial, sans-serif">635 nm</text>
+        <text x="201" y="290" text-anchor="middle" fill="#7FB2F0" font-size="14" font-weight="700" font-family="Public Sans, Arial, sans-serif">n-type GaAs</text>
+        <text x="441" y="290" text-anchor="middle" fill="#C3A2F2" font-size="14" font-weight="700" font-family="Public Sans, Arial, sans-serif">p-type GaAs</text>
+      </svg>
+      <figcaption>Schematic of the bench setup, not to scale. Each laser points straight down at one sample.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="layout">
+  <nav class="rail" aria-label="Walkthrough chapters">
+    <p class="rail-h">Walkthrough</p>
+    <ol id="railList"></ol>
+    <div class="rail-prog"><span id="progTxt">0% complete</span><div class="bar"><i id="progBar"></i></div></div>
+  </nav>
+
+<main id="main">
+
+<section class="chapter" id="c-start" data-title="Before you start">
+  <header class="ch-head"><span class="ch-num">1</span><div><h2>Before you start</h2><p class="ch-sum">What this lab is about, and a prediction to test.</p></div></header>
+  <p>Semiconductors respond to light. In this lab the response is chemical. Light lets dilute acid eat into GaAs, but only under the right conditions. Doping decides whether those conditions are met, so a purely optical experiment ends up telling you about electrical doping.</p>
+  <div class="cards c2">
+    <div><span class="kicker">Objective</span><h3>Photons meet a semiconductor</h3><p>Explore how light interacts with GaAs during photoelectrochemical (PEC) etching.</p></div>
+    <div><span class="kicker">Objective</span><h3>Doping changes the outcome</h3><p>Compare etch behavior in n-type and p-type GaAs under the same light and acid.</p></div>
+  </div>
+  <div class="callout think">
+    <h4>Make a prediction</h4>
+    <p>Think through these before you touch a sample. Write your prediction down. You will check it against your data.</p>
+    <ul>
+      <li>How much energy does a 635 nm photon carry, and how does it compare with the GaAs bandgap?</li>
+      <li>Dissolving a semiconductor means oxidizing it. Which carrier, electron or hole, can do that?</li>
+      <li>Sketch the bands of n-type and p-type GaAs touching a liquid. Which way does each bend at the surface?</li>
+      <li>What should a scan of an area the laser never touched look like?</li>
+    </ul>
+    <label class="f" for="pred">Our prediction</label>
+    <textarea id="pred" data-save="pred" placeholder="We expect the n-type sample to... and the p-type sample to... because..."></textarea>
+  </div>
+  <div class="panel">
+    <h3>Photon energy check</h3>
+    <div class="row">
+      <div><label class="f" for="wl">Wavelength in nm</label><input id="wl" type="number" min="100" max="3000" value="635" style="width:140px"></div>
+      <div><label class="f" for="eg">Bandgap in eV</label><input id="eg" type="number" step="0.01" value="1.42" style="width:120px"></div>
+      <div class="seg" role="group" aria-label="Preset wavelengths"><button type="button" data-wl="635">635</button><button type="button" data-wl="980">980</button><button type="button" data-wl="300">300</button><button type="button" data-wl="1000">1000</button></div>
+    </div>
+    <p id="photonOut" aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="chapter" id="c-safety" data-title="Safety">
+  <header class="ch-head"><span class="ch-num">2</span><div><h2>Safety</h2><p class="ch-sum">Acid, an arsenic compound and lasers share one bench. Read this and tick every box. The etch timer stays locked until you do.</p></div></header>
+  <div class="cards c3">
+    <div><span class="kicker">Acid</span><h3>1:10 HCl in water</h3><p>Dilute, but it still burns eyes and irritates skin. Your TF supplies it. Acid always goes into water, never the reverse.</p></div>
+    <div><span class="kicker">Material</span><h3>Gallium arsenide</h3><p>Intact pieces are low risk with gloves on. Dust and dissolved material are the hazard. Scribe gently and wipe up with a damp wipe.</p></div>
+    <div><span class="kicker">Light</span><h3>635 nm and 980 nm lasers</h3><p>Reflections come off the liquid, the wafer and the glass. The 980 nm beam is invisible, and your blink reflex will not react to it.</p></div>
+  </div>
+  <ul class="checks">
+    <li><label class="ckl"><input type="checkbox" class="ck gate"><span class="tx">I am wearing splash goggles, nitrile gloves, a lab coat, long pants and closed-toe shoes.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck gate"><span class="tx">I know where the eyewash, the safety shower and the spill kit are.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck gate"><span class="tx">I removed watches and rings that could throw a reflection.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck gate"><span class="tx">I will never look into a beam or its reflection. Beams point down into the dish and nowhere else.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck gate"><span class="tx">I treat every powered laser as live, including the invisible 980 nm one.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck gate"><span class="tx">Dishes stay steady and away from the bench edge. Cords stay out of the liquid.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck gate"><span class="tx">Used etchant and GaAs scraps go in the labeled waste container. Nothing goes down the drain.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck gate"><span class="tx">Someone stays at our station whenever a laser is on, and we tell our TF right away about spills, breakage or a stray beam.</span></label></li>
+  </ul>
+  <div class="callout stop">
+    <h4>Question 5 is a thought experiment</h4>
+    <p>The report asks what stronger acid would do. Answer it on paper only. Never mix or use a 1:2 or 1:1 solution.</p>
+  </div>
+</section>
+
+<section class="chapter" id="c-team" data-title="Your team">
+  <header class="ch-head"><span class="ch-num">3</span><div><h2>Your team</h2><p class="ch-sum">Pick your role. Chapters you lead get marked in red.</p></div></header>
+  <div class="seg" role="group" aria-label="My role" id="roleSeg" style="margin-bottom:22px">
+    <button type="button" data-role="1">I’m Role 1</button><button type="button" data-role="2">I’m Role 2</button><button type="button" data-role="3">I’m Role 3</button>
+  </div>
+  <div class="cards c3">
+    <div><span class="kicker">Role 1</span><h3>Set up</h3><p>Gathers supplies, builds the stand and clamps the lasers. During the etch, keeps time and writes the observation log.</p><label class="f" for="r1">Name</label><input type="text" id="r1" data-save="r1" style="width:100%"></div>
+    <div><span class="kicker">Role 2</span><h3>Run the etch</h3><p>Prepares and loads samples, aligns the lasers, runs the timed etch, then rinses and dries.</p><label class="f" for="r2">Name</label><input type="text" id="r2" data-save="r2" style="width:100%"></div>
+    <div><span class="kicker">Role 3</span><h3>Measure</h3><p>Runs the optical profilometer with CNS staff, saves the files and leads the Gwyddion work.</p><label class="f" for="r3">Name</label><input type="text" id="r3" data-save="r3" style="width:100%"></div>
+  </div>
+  <div class="row">
+    <div><label class="f" for="grp">Group number</label><input type="text" id="grp" data-save="grp" style="width:140px"></div>
+    <div><label class="f" for="etchSel">Assigned etch time</label><select id="etchSel" data-save="etchSel"><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></div>
+  </div>
+  <div class="callout note"><p>Each group etches for one time only. Question 2 needs all four times, so plan to share data with the other groups.</p></div>
+</section>
+
+<section class="chapter" id="c-setup" data-title="Set up" data-role="1">
+  <header class="ch-head"><span class="ch-num">4</span><div><h2>Set up the bench</h2><p class="ch-sum">Build the stand and position the lasers. Everything stays off.</p></div><span class="mine-badge">You lead this chapter</span></header>
+  <p class="role-line"><b>Role 1</b> leads. The whole team checks the final layout.</p>
+  <ol class="steps">
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Collect two 635 nm lasers, one 980 nm laser, two lab stand clamps, one lamp stand and two petri dishes.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Label one dish n-type and the other p-type. Add your group number and etch time.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Clamp the two 635 nm lasers to the stand, one above each dish, each pointing straight down.<span class="sub">Match the schematic at the top of the page.</span></span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Set the 980 nm laser aside, powered off, until your TF says how it will be used.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">With everything off, trace where each beam would land. It should hit a dish and point nowhere near a face, door or window.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Ask your TF to check the setup before any laser turns on.</span></label></li>
+  </ol>
+</section>
+
+<section class="chapter" id="c-etch" data-title="Run the etch" data-role="2">
+  <header class="ch-head"><span class="ch-num">5</span><div><h2>Run the etch</h2><p class="ch-sum">Load the samples, align the beams and run the timed etch on the polished front side.</p></div><span class="mine-badge">You lead this chapter</span></header>
+  <p class="role-line"><b>Role 2</b> leads. Role 1 runs the timer and the log.</p>
+  <ol class="steps">
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Label two plastic petri dishes for storage, one p-type and one n-type, with group number and etch time.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Pick up one n-type and one p-type GaAs sample with tweezers.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Scribe the unpolished backside of each so you can always tell front from back.<span class="sub">A small mark is enough. Wipe any dust with a damp wipe.</span></span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Fill each glass petri dish with the 1:10 HCl to water solution from your TF, enough to cover the sample.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Place each sample polished side up in its matching dish. Check the labels twice.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Confirm your etch time with your TF.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Align each laser with a corner of its sample so the etch is easy to find later.<span class="sub">Record the corner below. Role 3 needs it.</span></span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Wrap aluminum foil over each laser’s touch sensor to switch it on, and start the timer at the same moment.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Stay at the bench. Log bubbles, a shifting sample or a wandering beam.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">When time is up, remove the foil from both lasers.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Lift each sample with tweezers, rinse and dry it the way your TF shows you, and store it polished side up in its plastic dish.</span></label></li>
+  </ol>
+
+  <div class="timer" id="timerCard">
+    <div class="ring">
+      <svg viewBox="0 0 220 220" aria-hidden="true"><circle class="trk" cx="110" cy="110" r="96"/><circle class="arc" id="tArc" cx="110" cy="110" r="96"/></svg>
+      <div class="ring-in"><div class="disp" id="tDisp" role="timer" aria-live="off">15:00</div><div class="ring-sub" id="tSub">Ready</div></div>
+    </div>
+    <div class="timer-side">
+      <h3>Etch timer</h3>
+      <div class="seg" role="radiogroup" aria-label="Etch time" id="tSeg">
+        <button type="button" role="radio" data-m="15">15 min</button><button type="button" role="radio" data-m="30">30 min</button><button type="button" role="radio" data-m="45">45 min</button><button type="button" role="radio" data-m="60">60 min</button>
+      </div>
+      <div class="row" style="margin:18px 0 10px"><button type="button" class="primary" id="tStart" disabled>Start etch timer</button><button type="button" id="tStop">Stop and reset</button></div>
+      <p class="tstat" id="tStatus" aria-live="assertive"></p>
+      <p class="muted" id="gateMsg" style="font-size:.92rem;margin:0"></p>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:24px">
+    <div style="flex:1 1 220px"><label class="f" for="corner">Corner the beam hit, for each sample</label><input type="text" id="corner" data-save="corner" style="width:100%" placeholder="n-type top left of scribe mark, p-type..."></div>
+  </div>
+  <label class="f" for="obs">Observation log</label>
+  <textarea id="obs" data-save="obs" placeholder="Minute, what you saw. Bubbles, beam drift, color change, anything unusual."></textarea>
+</section>
+
+<section class="chapter" id="c-scan" data-title="Measure" data-role="3">
+  <header class="ch-head"><span class="ch-num">6</span><div><h2>Measure with the optical profilometer</h2><p class="ch-sum">Scan each exposed sample at the CNS Characterization Suite, LL2.226.</p></div><span class="mine-badge">You lead this chapter</span></header>
+  <p class="role-line"><b>Role 3</b> leads. Lab staff walk you through the first scan.</p>
+  <div class="cards c2">
+    <div><h3>Scans you need</h3>
+      <div class="tw" style="margin:0"><table><thead><tr><th>Sample</th><th>Data from</th></tr></thead><tbody>
+        <tr><td><span style="color:var(--p);font-weight:700">p-type</span> exposed to laser</td><td>You</td></tr>
+        <tr><td><span style="color:var(--p);font-weight:700">p-type</span> not exposed</td><td>Lab staff</td></tr>
+        <tr><td><span style="color:var(--n);font-weight:700">n-type</span> exposed to laser</td><td>You</td></tr>
+        <tr><td><span style="color:var(--n);font-weight:700">n-type</span> not exposed</td><td>Lab staff</td></tr>
+      </tbody></table></div></div>
+    <div><h3>Instrument settings</h3>
+      <div class="tw" style="margin:0"><table class="spec"><tbody>
+        <tr><td>Software</td><td>Vision64</td></tr>
+        <tr><td>Mode</td><td>VSI/USI</td></tr>
+        <tr><td>Objective and field</td><td>5x, about 1200 by 1200 µm</td></tr>
+        <tr><td>Intensity</td><td>Auto, green circle</td></tr>
+        <tr><td>Backscan</td><td>25 µm</td></tr>
+        <tr><td>Length</td><td>25 µm</td></tr>
+      </tbody></table></div></div>
+  </div>
+  <ol class="steps">
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Bring both samples in their labeled plastic dishes, rinsed and fully dry, plus the corner notes.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Open Vision64 and choose the settings above.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Under intensity, click auto and check that the circle is green.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Place the sample under the objective with the etched corner in view.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Focus with the jog wheel until interference bands appear.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Adjust tip and tilt until the bands cover the whole visible region.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Select Measurement on the left bar, set backscan and length to 25 µm, and click the green play button.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Create longitudinal and transverse profiles across the etch. Save each as CSV and BMP.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Save the full scan as an .ASC file using the names below.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Repeat for the other sample, then collect the unexposed scans from lab staff.</span></label></li>
+  </ol>
+  <div class="panel">
+    <h3>File names</h3>
+    <div class="row">
+      <div><label class="f" for="fTime">Etch time</label><select id="fTime"><option>15</option><option>30</option><option>45</option><option>60</option></select></div>
+      <div><label class="f" for="fType">Sample</label><select id="fType"><option value="n">n-type</option><option value="p">p-type</option></select></div>
+      <div><label class="f" for="fLaser">Laser exposure</label><select id="fLaser"><option value="yes">Yes</option><option value="no">No</option></select></div>
+      <div><label class="f" for="fPre">Course prefix</label><input type="text" id="fPre" value="ES173" style="width:120px"></div>
+    </div>
+    <div class="names">
+      <div><span class="muted">Full scan</span><code id="fAsc"></code><button type="button" class="sm" data-copy="fAsc">Copy</button></div>
+      <div><span class="muted">Profile data</span><code id="fCsv"></code><button type="button" class="sm" data-copy="fCsv">Copy</button></div>
+      <div><span class="muted">Profile image</span><code id="fBmp"></code><button type="button" class="sm" data-copy="fBmp">Copy</button></div>
+    </div>
+    <p class="muted" style="margin:12px 0 0;font-size:.92rem">If your TF or lab staff give you a different naming rule, use theirs.</p>
+  </div>
+</section>
+
+<section class="chapter" id="c-process" data-title="Process in Gwyddion">
+  <header class="ch-head"><span class="ch-num">7</span><div><h2>Process the scans in Gwyddion</h2><p class="ch-sum">Level, choose a baseline and pull out depths and roughness.</p></div></header>
+  <p>Install Gwyddion from <a href="http://gwyddion.net/download.php" target="_blank" rel="noopener">gwyddion.net</a>. Windows installs directly. On a Mac, use Homebrew or Fink.</p>
+  <ol class="steps">
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Open the .ASC file.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Level the data with one method. Three-point level, mean plane subtraction, or remove polynomial background.<span class="sub">Pick points or regions on unetched surface so the pit does not tilt your reference.</span></span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Crop to the region around the etch.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Choose a baseline region of unetched surface. Use the same rule on every sample and write it down.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Measure depth with individual points, distance between points or a line profile. Click Apply on the profile so it can be exported.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Run statistics on a selected area for roughness. Click Apply.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Open the 3D view for a figure of the etch shape. Right-click the scale bar to change colors.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Export images with File, then Save As, with a .TIFF or .PNG extension.</span></label></li>
+  </ol>
+  <div class="callout note"><h4>Define depth once</h4><p>Depth could mean the deepest point or the average across the center of the pit. Pick one, state it in the report and use it for every sample.</p></div>
+</section>
+
+<section class="chapter" id="c-analyze" data-title="Analyze">
+  <header class="ch-head"><span class="ch-num">8</span><div><h2>Depth against time</h2><p class="ch-sum">Pool class data, plot it and pull out an etch rate for Question 2.</p></div></header>
+  <p>Enter depths as positive numbers below your baseline. Add other groups’ results so all four etch times are covered. Leave a box empty if that sample did not etch.</p>
+  <div class="row">
+    <div><label class="f" for="unit">Depth unit</label><select id="unit"><option value="1">nm</option><option value="1000">µm</option></select></div>
+    <label class="ckl" style="padding:10px 0"><input type="checkbox" id="origin" class="ck-plain"><span class="tx">Force the fit through zero</span></label>
+  </div>
+  <div class="tw"><table id="dataTbl" class="datatbl"><thead><tr><th>Time (min)</th><th style="color:var(--n)">n-type depth</th><th style="color:var(--p)">p-type depth</th><th><span class="skip">Remove</span></th></tr></thead><tbody></tbody></table></div>
+  <div class="row"><button type="button" id="addRow">Add a row</button><button type="button" id="copyCsv">Copy as CSV</button></div>
+  <div class="chart" id="chart"></div>
+  <div class="legend"><span><span class="dot" style="background:var(--n)"></span>n-type</span><span><span class="dot" style="background:var(--p)"></span>p-type</span><span class="muted">Dashed lines are least squares fits</span></div>
+  <div class="res" id="results" aria-live="polite"></div>
+  <div class="callout think" style="margin-top:24px"><p>Look at the plot before you trust the number. Is a straight line the right shape? Should it be? Where could your values be off? Question 2 asks all three.</p></div>
+</section>
+
+<section class="chapter" id="c-report" data-title="Group report">
+  <header class="ch-head"><span class="ch-num">9</span><div><h2>Write the group report</h2><p class="ch-sum">One submission per group with every member’s name and an answer to each question, backed by your own data.</p></div></header>
+  <div class="qlist">
+    <article class="q"><div class="q-pts">20<small>pts</small></div><div><h3>Does n-type etch differently from p-type?</h3><p>Do you see a difference in etching behavior between n-type and p-type GaAs, and what is it?</p><p class="hint">Compare exposed and unexposed scans of each type with the same baseline and color scale. Quote numbers from profiles or statistics.</p></div></article>
+    <article class="q"><div class="q-pts">15<small>pts</small></div><div><h3>Etch depth and rate</h3><p>Where you see etching, plot depth against time and extrapolate an etch rate. Choose and state your baseline. Is it linear? Should it be? What errors are in your measurements or extrapolation?</p><p class="hint">Explain what a nonzero intercept would mean. Separate measurement error from variation in the experiment itself.</p></div></article>
+    <article class="q"><div class="q-pts">10<small>pts</small></div><div><h3>The mechanism</h3><p>Given what you observed, explain the mechanism behind PEC etching of GaAs with a 635 nm laser.</p><p class="hint">Follow one photon from the laser to a dissolved product. Draw a band diagram for each doping type and say where each carrier goes.</p></div></article>
+    <article class="q"><div class="q-pts">10<small>pts</small></div><div><h3>A different wavelength</h3><p>Would a 300 nm or a 1000 nm laser work? Why or why not? Stay consistent with your answer to Question 3.</p><p class="hint">Use the photon energy check in chapter 1. Consider whether the light is absorbed and also where.</p></div></article>
+    <article class="q"><div class="q-pts">10<small>pts</small></div><div><h3>Stronger acid</h3><p>What would happen with a 1:2 or 1:1 HCl to water dilution? Give reasons for your hypothesis.</p><p class="hint">Name at least two things that change as acid gets stronger and say which matters most. Hypothesis only. Do not test it.</p></div></article>
+  </div>
+  <div class="panel" style="margin-top:28px">
+    <h3>Report starter</h3>
+    <p>Builds an outline from your team details, prediction and the five questions. Paste it into your document.</p>
+    <div class="row"><button type="button" class="primary" id="buildRep">Build outline</button><button type="button" id="copyRep">Copy outline</button></div>
+    <label class="f" for="repOut">Outline</label>
+    <textarea id="repOut" style="min-height:240px" readonly></textarea>
+  </div>
+</section>
+
+<section class="chapter" id="c-cleanup" data-title="Clean up">
+  <header class="ch-head"><span class="ch-num">10</span><div><h2>Clean up and leave</h2><p class="ch-sum">Everything off, everything in its place, hands washed.</p></div></header>
+  <ul class="checks">
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Every laser is off and every foil square is removed.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Used etchant is in the labeled waste container, poured as your TF directs.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Glass dishes are rinsed as your TF directs and returned.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Lasers, clamps and the stand are returned. Nothing is left on the bench.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Gloves are off and hands are washed.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">All data files are backed up, including .ASC, CSV, BMP and exported images.</span></label></li>
+  </ul>
+</section>
+
+<section class="chapter" id="c-help" data-title="Help" data-nonum="1">
+  <header class="ch-head" style="grid-template-columns:1fr"><div><h2>If something looks wrong</h2><p class="ch-sum">Common snags and what to do. When in doubt, ask your TF.</p></div></header>
+  <details class="acc"><summary>A laser turned off during the etch</summary><div><p>The touch sensor needs steady contact with the foil. Rewrap it, note the gap in your log and tell your TF.</p></div></details>
+  <details class="acc"><summary>A sample moved in the dish</summary><div><p>Turn the lasers off first by removing the foil. Tell your TF, note the time, and decide together how to continue.</p></div></details>
+  <details class="acc"><summary>There are bubbles on a sample</summary><div><p>Log the time and how heavy they are, then tell your TF.</p></div></details>
+  <details class="acc"><summary>We can’t find the etch on the profilometer</summary><div><p>Go back to your corner notes and scan near where the beam hit. Lab staff can help you find the edge of the pit.</p></div></details>
+  <details class="acc"><summary>No interference bands appear</summary><div><p>Turn the jog wheel slowly through focus. Check that the sample is clean, dry and flat. Then ask lab staff.</p></div></details>
+  <details class="acc"><summary>The n-type and p-type scans look the same</summary><div><p>Confirm you scanned the right corner and did not swap samples. Compare with the unexposed scans. Then report what you saw honestly. An unexpected result still counts.</p></div></details>
+  <details class="acc"><summary>We don’t have data for the other etch times</summary><div><p>Ask your TF for the class data sheet. Each group runs only one etch time.</p></div></details>
+</section>
+
+</main>
+</div>
+
+<footer class="foot"><div class="foot-in">
+  <div><b>Active Learning Labs</b><p>Harvard John A. Paulson School of Engineering and Applied Sciences</p><p>Science and Engineering Complex, 150 Western Avenue, Boston, MA 02134</p></div>
+  <div><b>This lab</b><p>ES173 Introduction to Electronic and Photonic Devices</p><p>Lab 2, photoelectrochemical etching</p></div>
+  <div><b>Questions</b><p>Ask your TF first. Follow your TF and lab staff wherever they differ from this page.</p><p><a href="https://seas.harvard.edu/active-learning-labs/course-support/lab-safety" target="_blank" rel="noopener">ALL lab safety</a></p></div>
+</div></footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function initCommon(P,onChange){
+  /* rail */
+  const chapters=$$('section.chapter');const rail=$('#railList');let num=0;
+  chapters.forEach(s=>{
+    const li=document.createElement('li');li.dataset.for=s.id;
+    const n=s.dataset.nonum?'':String(++num);
+    li.innerHTML='<a href="#'+s.id+'"><span class="rn">'+n+'</span><span class="rt">'+s.dataset.title+'</span><span class="rc"></span></a>';
+    rail.appendChild(li);
+  });
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){$$('#railList li').forEach(l=>l.classList.toggle('active',l.dataset.for===e.target.id));const a=$('#railList li.active');if(a&&window.innerWidth<1100){const r=a.parentElement;r.scrollTo({left:a.offsetLeft-24,behavior:RM?'auto':'smooth'})}}})},{rootMargin:'-25% 0px -65% 0px'});
+    chapters.forEach(c=>io.observe(c));
+  }
+  /* checklists */
+  const cks=$$('input.ck');let saved=[];try{saved=JSON.parse(store.get(P+'ck')||'[]')}catch(e){}
+  function upd(){
+    let done=0;cks.forEach(c=>{if(c.checked)done++});
+    const pct=cks.length?Math.round(100*done/cks.length):0;
+    const t=$('#progTxt');if(t)t.textContent=pct+'% complete';const b=$('#progBar');if(b)b.style.width=pct+'%';
+    chapters.forEach(s=>{const c=$$('#'+s.id+' input.ck');const li=$('#railList li[data-for="'+s.id+'"]');if(!li)return;const d=c.filter(x=>x.checked).length;li.querySelector('.rc').textContent=c.length?d+'/'+c.length:'';li.classList.toggle('complete',c.length>0&&d===c.length)});
+    if(onChange)onChange();
+  }
+  cks.forEach((c,i)=>{c.checked=saved.includes(i);c.addEventListener('change',()=>{store.set(P+'ck',JSON.stringify(cks.map((x,j)=>x.checked?j:-1).filter(j=>j>=0)));upd()})});
+  /* saved fields */
+  $$('[data-save]').forEach(el=>{const v=store.get(P+el.dataset.save);if(v!==null)el.value=v;['input','change'].forEach(ev=>el.addEventListener(ev,()=>store.set(P+el.dataset.save,el.value)))});
+  upd();
+  return upd;
+}
+
+function initPhoton(){
+  const wl=$('#wl'),eg=$('#eg'),o=$('#photonOut');if(!wl)return;
+  function run(){
+    const w=parseFloat(wl.value),g=parseFloat(eg.value);
+    if(!(w>0)||!(g>0)){o.textContent='Enter a wavelength and a bandgap.';return}
+    const e=1239.84/w,cut=1239.84/g;
+    const v=e>g?'above the bandgap, so the light can be absorbed':e<g?'below the bandgap, so the light mostly passes through':'right at the bandgap';
+    o.innerHTML='<span class="big">'+e.toFixed(2)+' eV</span>A '+w+' nm photon is '+v+'. A '+g+' eV gap puts the cutoff near '+Math.round(cut)+' nm.';
+    $$('button[data-wl]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.wl===String(w))));
+  }
+  wl.addEventListener('input',run);eg.addEventListener('input',run);
+  $$('button[data-wl]').forEach(b=>b.addEventListener('click',()=>{wl.value=b.dataset.wl;run()}));
+  run();
+}
+
+function copyText(text,btn){
+  const done=()=>{const o=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=o,1500)};
+  function fb(){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){btn.textContent='Select the text and copy it'}document.body.removeChild(ta)}
+  try{navigator.clipboard.writeText(text).then(done,fb)}catch(e){fb()}
+}
+
+function initFit(P){
+  let rows=[];try{rows=JSON.parse(store.get(P+'rows')||'null')||[]}catch(e){rows=[]}
+  if(!rows.length)rows=[15,30,45,60].map(t=>({t:String(t),n:'',p:''}));
+  $('#unit').value=store.get(P+'unit')||'1';$('#origin').checked=store.get(P+'origin')==='1';
+  function render(){
+    const tb=$('#dataTbl tbody');tb.innerHTML='';
+    rows.forEach((r,i)=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td><input type="number" step="any" aria-label="Time in minutes, row '+(i+1)+'"></td><td><input type="number" step="any" aria-label="n-type depth, row '+(i+1)+'"></td><td><input type="number" step="any" aria-label="p-type depth, row '+(i+1)+'"></td><td><button type="button" class="sm" aria-label="Remove row '+(i+1)+'">Remove</button></td>';
+      const ins=tr.querySelectorAll('input');ins[0].value=r.t;ins[1].value=r.n;ins[2].value=r.p;
+      ['t','n','p'].forEach((k,j)=>ins[j].addEventListener('input',()=>{r[k]=ins[j].value;compute()}));
+      tr.querySelector('button').addEventListener('click',()=>{rows.splice(i,1);render();compute()});
+      tb.appendChild(tr);
+    });
+  }
+  function lin(pts,origin){
+    const n=pts.length;if(n<2)return null;let sx=0,sy=0,sxx=0,sxy=0;
+    pts.forEach(([x,y])=>{sx+=x;sy+=y;sxx+=x*x;sxy+=x*y});let m,b;
+    if(origin){if(!sxx)return null;m=sxy/sxx;b=0}else{const d=n*sxx-sx*sx;if(!d)return null;m=(n*sxy-sx*sy)/d;b=(sy-m*sx)/n}
+    const res=pts.reduce((a,[x,y])=>a+Math.pow(y-(m*x+b),2),0),my=sy/n,tot=pts.reduce((a,[,y])=>a+Math.pow(y-my,2),0);
+    let se=null;if(origin)se=Math.sqrt(res/(n-1)/sxx);else if(n>2){const mx=sx/n;se=Math.sqrt(res/(n-2)/pts.reduce((a,[x])=>a+Math.pow(x-mx,2),0))}
+    return{m,b,se,r2:(!origin&&tot>0)?1-res/tot:null};
+  }
+  const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(v))),f=v/p;return(f<=1?1:f<=2?2:f<=5?5:10)*p};
+  function chart(series){
+    const W=640,H=340,L=70,R=18,T=16,B=54,pw=W-L-R,ph=H-T-B,pts=series.flatMap(s=>s.pts);
+    if(!pts.length)return'<div class="panel" style="margin:0"><p class="muted" style="margin:0">Enter at least one depth to draw the plot.</p></div>';
+    const xmax=Math.max(60,...pts.map(p=>p[0]));let ymax=Math.max(...pts.map(p=>p[1]));
+    series.forEach(s=>{if(s.fit)ymax=Math.max(ymax,s.fit.m*xmax+s.fit.b)});if(!(ymax>0))ymax=1;
+    const ys=nice(ymax/5),yTop=Math.ceil(ymax*1.05/ys)*ys,xs=xmax<=60?15:nice(xmax/5),xTop=Math.ceil(xmax/xs)*xs;
+    const X=v=>L+v/xTop*pw,Y=v=>T+ph-v/yTop*ph;let g='';
+    for(let v=0;v<=yTop+1e-9;v+=ys)g+='<line class="grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text x="'+(L-10)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+(+v.toPrecision(4))+'</text>';
+    for(let v=0;v<=xTop+1e-9;v+=xs)g+='<text x="'+X(v)+'" y="'+(H-B+20)+'" text-anchor="middle">'+v+'</text>';
+    g+='<line class="axis" x1="'+L+'" x2="'+L+'" y1="'+T+'" y2="'+(T+ph)+'"/><line class="axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+(T+ph)+'" y2="'+(T+ph)+'"/>';
+    g+='<text class="t" x="'+(L+pw/2)+'" y="'+(H-10)+'" text-anchor="middle">Etch time (min)</text><text class="t" transform="translate(18 '+(T+ph/2)+') rotate(-90)" text-anchor="middle">Depth below baseline (nm)</text>';
+    g+='<clipPath id="cp"><rect x="'+L+'" y="'+T+'" width="'+pw+'" height="'+ph+'"/></clipPath>';
+    series.forEach(s=>{const c=s.key==='n'?'var(--n)':'var(--p)';
+      if(s.fit)g+='<line clip-path="url(#cp)" x1="'+X(0)+'" y1="'+Y(s.fit.b)+'" x2="'+X(xTop)+'" y2="'+Y(s.fit.m*xTop+s.fit.b)+'" stroke="'+c+'" stroke-width="2" stroke-dasharray="7 5"/>';
+      s.pts.forEach(p=>{g+='<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="6" fill="'+c+'" stroke="var(--paper)" stroke-width="2"/>'})});
+    return'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Etch depth against etch time">'+g+'</svg>';
+  }
+  function compute(){
+    store.set(P+'rows',JSON.stringify(rows));store.set(P+'unit',$('#unit').value);store.set(P+'origin',$('#origin').checked?'1':'0');
+    const f=+$('#unit').value,origin=$('#origin').checked;
+    const series=['n','p'].map(k=>{const pts=rows.filter(r=>r.t!==''&&r[k]!==''&&isFinite(+r.t)&&isFinite(+r[k])).map(r=>[+r.t,+r[k]*f]);return{key:k,pts,fit:lin(pts,origin)}});
+    $('#chart').innerHTML=chart(series);
+    const fm=v=>Math.abs(v)>=100?v.toFixed(0):v.toPrecision(3);
+    $('#results').innerHTML=series.map(s=>{const nm=s.key==='n'?'n-type':'p-type',col=s.key==='n'?'var(--n)':'var(--p)';
+      if(!s.fit)return'<div><b style="color:'+col+'">'+nm+'</b><p class="muted" style="margin:6px 0 0">Needs two or more points with depths.</p></div>';
+      const r=s.fit;return'<div><b style="color:'+col+'">'+nm+' etch rate</b><span class="big">'+fm(r.m)+(r.se!==null?' ± '+fm(r.se):'')+' nm/min</span><span class="muted">Intercept '+fm(r.b)+' nm'+(r.r2!==null?'. R squared '+r.r2.toFixed(3):'')+'. From '+s.pts.length+' points.</span></div>'}).join('');
+  }
+  $('#unit').addEventListener('change',compute);$('#origin').addEventListener('change',compute);
+  $('#addRow').addEventListener('click',()=>{rows.push({t:'',n:'',p:''});render();compute()});
+  const cc=$('#copyCsv');if(cc)cc.addEventListener('click',e=>{const u=$('#unit').value==='1'?'nm':'um';copyText('time_min,n_depth_'+u+',p_depth_'+u+'\n'+rows.map(r=>[r.t,r.n,r.p].join(',')).join('\n'),e.currentTarget)});
+  render();compute();
+}
+
+(function(){
+const P='es173-lab2-student-v2-';
+let running=false;
+function gate(){const g=$$('input.gate'),ok=g.every(x=>x.checked);$('#tStart').disabled=!ok||running;$('#gateMsg').textContent=ok?'Safety checks complete. The timer is unlocked.':'Tick every box in chapter 2 to unlock the timer.'}
+initCommon(P,()=>{if($('#tStart'))gate()});
+initPhoton();
+
+/* role */
+function setRole(r){
+  store.set(P+'role',r||'');
+  $$('#roleSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.role===r)));
+  $$('section.chapter[data-role]').forEach(s=>{const m=s.dataset.role===r;s.classList.toggle('mine',m);const li=$('#railList li[data-for="'+s.id+'"]');if(li)li.classList.toggle('mine',m)});
+}
+$$('#roleSeg button').forEach(b=>b.addEventListener('click',()=>setRole(b.getAttribute('aria-pressed')==='true'?'':b.dataset.role)));
+setRole(store.get(P+'role')||'');
+
+/* timer */
+const C=603.19,disp=$('#tDisp'),sub=$('#tSub'),stat=$('#tStatus'),card=$('#timerCard'),arc=$('#tArc');
+let mins=+($('#etchSel').value||15),end=0,iv=null,ctx=null,lock=null;
+const fmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const hm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+function pick(m){if(running)return;mins=m;$$('#tSeg button').forEach(b=>{const on=+b.dataset.m===m;b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-checked',String(on))});disp.textContent=fmt(m*60000);arc.style.strokeDashoffset=0;sub.textContent='Ready'}
+$$('#tSeg button').forEach(b=>b.addEventListener('click',()=>pick(+b.dataset.m)));
+$('#etchSel').addEventListener('change',()=>pick(+$('#etchSel').value));
+pick(mins);
+async function wake(on){try{if(on&&'wakeLock' in navigator){lock=await navigator.wakeLock.request('screen')}else if(lock){await lock.release();lock=null}}catch(e){}}
+function beep(){try{if(!ctx)return;let n=0;const t=setInterval(()=>{const o=ctx.createOscillator(),g=ctx.createGain();g.gain.value=.15;o.frequency.value=880;o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.25);if(++n>=8)clearInterval(t)},500)}catch(e){}}
+function tick(){
+  const left=end-Date.now(),total=mins*60000;
+  arc.style.strokeDashoffset=String(C*(1-Math.max(0,left)/total));
+  if(left<=0){clearInterval(iv);running=false;disp.textContent='00:00';sub.textContent='Done';stat.textContent='Time is up. Remove the foil from both lasers now.';card.classList.add('alarm');document.title='Time is up, ES173 Lab 2';beep();wake(false);gate();return}
+  disp.textContent=fmt(left);
+}
+$('#tStart').addEventListener('click',()=>{
+  try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ctx=null}
+  running=true;card.classList.remove('alarm');end=Date.now()+mins*60000;
+  sub.textContent='Etching';stat.textContent='Started '+hm(new Date())+'. Ends '+hm(new Date(end))+'.';
+  clearInterval(iv);iv=setInterval(tick,250);tick();wake(true);gate();
+});
+$('#tStop').addEventListener('click',()=>{clearInterval(iv);running=false;card.classList.remove('alarm');stat.textContent='';document.title='ES173 Lab 2 Student Walkthrough';wake(false);pick(mins);gate()});
+document.addEventListener('visibilitychange',()=>{if(running&&document.visibilityState==='visible')wake(true)});
+gate();
+
+/* file names */
+function names(){
+  const t=$('#fTime').value,s=$('#fType').value,l=$('#fLaser').value,pre=($('#fPre').value||'ES173').trim();
+  $('#fAsc').textContent=t+'min_'+s+'type_'+(l==='yes'?'laser':'nolaser')+'.asc';
+  $('#fCsv').textContent=pre+'_'+s+'type_'+t+'min_Fall26.csv';
+  $('#fBmp').textContent=pre+'_'+s+'type_'+t+'min_Fall26.bmp';
+}
+['fTime','fType','fLaser','fPre'].forEach(id=>['input','change'].forEach(ev=>$('#'+id).addEventListener(ev,names)));
+$('#fTime').value=$('#etchSel').value||'15';names();
+$$('button[data-copy]').forEach(b=>b.addEventListener('click',()=>copyText($('#'+b.dataset.copy).textContent,b)));
+
+/* fit */
+initFit(P);
+
+/* report */
+const QS=[[1,20,'Does n-type etch differently from p-type?','Profiles and images of exposed and unexposed samples of both types, with numbers.'],
+ [2,15,'Etch depth and rate','Depth against time plot with fit, baseline choice, linearity discussion, error sources.'],
+ [3,10,'The mechanism','Band diagrams for n-type and p-type, path from photon to dissolved product.'],
+ [4,10,'A different wavelength','Photon energy against bandgap for 300 nm and 1000 nm, where light is absorbed.'],
+ [5,10,'Stronger acid','Hypothesis with at least two reasons. Not tested.']];
+$('#buildRep').addEventListener('click',()=>{
+  const nm=[$('#r1').value,$('#r2').value,$('#r3').value].filter(Boolean).join(', ')||'(add every member)';
+  let t='ES173 Lab 2 group report\nGroup '+($('#grp').value||'(number)')+'\nMembers '+nm+'\nEtch time '+$('#etchSel').value+' minutes\n\nPrediction before the lab\n'+($('#pred').value||'(add your prediction)')+'\n\n';
+  QS.forEach(q=>{t+='Question '+q[0]+'. '+q[2]+' ('+q[1]+' points)\nEvidence to include. '+q[3]+'\n\n[Answer]\n\n'});
+  $('#repOut').value=t;
+});
+$('#copyRep').addEventListener('click',e=>{if(!$('#repOut').value)$('#buildRep').click();copyText($('#repOut').value,e.currentTarget)});
+})();
+
+</script>
+</body>
+</html>
