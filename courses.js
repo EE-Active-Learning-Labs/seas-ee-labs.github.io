@@ -9,8 +9,7 @@
      extras       more links, as a list like [{label:'Name', href:'https://...'}]
 */
 window.EE_COURSE_DEFAULTS = {
-  access: 'Access procedures for this course are posted on the course Canvas site.',
-  labFolder: 'https://drive.google.com/drive/folders/1n4fMJf8UUFInBMncaAQJ-m7vMAUm99gx?usp=drive_link'
+  access: 'Access procedures for this course are posted on the course Canvas site.'
 };
 window.EE_COURSES = [
   {id:'es50',code:'ES 50'},

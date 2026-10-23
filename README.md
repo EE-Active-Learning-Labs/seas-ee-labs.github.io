@@ -37,16 +37,16 @@ Opening the files by double click will not follow folder links correctly.
 All courses live in `assets/js/courses.js`. Each one gets a page automatically at `courses/course/#id`.
 
 - To add a course, copy a line in the list and change the `id` and `code`.
-- To give a course its own lab guide link, add `labGuide:'https://...'` to its line. Without it, the page opens the shared lab activities folder.
+- To give a course its own lab guide link, add `labGuide:'https://...'` to its line. Until you add one, the page says the lab guide will be linked there.
 - To point a course at its Canvas site, add `canvas:'https://...'`.
 - To change the access message for one course, add `access:'Your text'`.
-- The default access message and shared folder link are at the top of the file.
+- The default access message is at the top of the file.
 - The tech support link on every course page comes from `booking` in `assets/js/config.js`.
 
 ## Before you publish
 
 - Confirm the access page wording matches the current policy.
-- Check sharing on the Google Drive folder. Students must be able to open it, and it should hold only student facing guides.
+- When you add lab guide links, check sharing on each one so students can open it, and link only student facing guides.
 - Confirm room numbers and the address.
 - Anything in this repository is public when the repository is public. Do not add answer keys, TF guides, grading notes, student data or internal staffing details.
 - If your site lives at a project address such as `https://ORG.github.io/REPO/`, the `404.html` home link needs `/REPO/` instead of `/`.

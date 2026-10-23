@@ -63,9 +63,8 @@
       document.getElementById('cTitle').textContent = c.title || 'Access information, tech support and lab guide.';
       var access = c.access || D.access || '';
       var canvas = c.canvas ? '<p><a class="btn" href="' + esc(c.canvas) + '" target="_blank" rel="noopener">Open course Canvas</a></p>' : '';
-      var own = !!c.labGuide, guide = c.labGuide || D.labFolder || '';
-      var guideBtn = guide ? '<a class="btn primary" href="' + esc(guide) + '" target="_blank" rel="noopener">' + esc(c.labGuideLabel || (own ? 'Open the lab guide' : 'Open the lab activities folder')) + '</a>' : '<a class="btn primary" aria-disabled="true">Lab guide coming soon</a>';
-      var guideNote = own ? 'The latest published lab activities for this course.' : 'This folder holds lab activities for the courses we support. Open the folder for ' + esc(c.code) + '.';
+      var guideBtn = c.labGuide ? '<a class="btn primary" href="' + esc(c.labGuide) + '" target="_blank" rel="noopener">' + esc(c.labGuideLabel || 'Open the lab guide') + '</a>' : '';
+      var guideNote = c.labGuide ? 'The latest published lab activities for this course.' : 'The latest lab activities for this course will be linked here.';
       cards.innerHTML =
         '<div><span class="kicker">Before you come</span><h3>Access</h3><p>' + esc(access) + '</p>' + canvas + '</div>' +
         '<div><span class="kicker">When you need help</span><h3>Tech support</h3><p>Book time with the lab team for help with equipment, software or setup.</p><a class="btn primary" data-link="booking">Book tech support</a></div>' +
