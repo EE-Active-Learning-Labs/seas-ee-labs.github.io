@@ -43,11 +43,11 @@ p{margin:0 0 1em;max-width:68ch}ul,ol{max-width:68ch;padding-left:1.2em}li{margi
 }
 
 /* buttons */
-.btn{font:inherit;font-weight:700;font-size:.97rem;display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 22px;border-radius:2px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);text-decoration:none;cursor:pointer;transition:background .15s,color .15s}
-.btn:hover{background:var(--ink);color:var(--paper)}
+.btn{font:inherit;font-weight:700;font-size:.97rem;display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 22px;border-radius:2px;border:1.5px solid var(--crimson);background:var(--crimson);color:var(--on-crimson);text-decoration:none;cursor:pointer;transition:background .15s,color .15s}
+.btn:hover{background:var(--crimson-ink);border-color:var(--crimson-ink);color:var(--on-crimson)}
 .btn.primary{background:var(--crimson);border-color:var(--crimson);color:var(--on-crimson)}
 .btn.primary:hover{background:var(--crimson-ink);border-color:var(--crimson-ink)}
-.btn.ghost{border-color:var(--hero-ink);color:var(--hero-ink)}.btn.ghost:hover{background:var(--hero-ink);color:var(--hero)}
+/* .btn.ghost now matches the standard button */
 .btn[aria-disabled="true"]{opacity:.55;pointer-events:none}
 .btns{display:flex;flex-wrap:wrap;gap:12px}
 
