@@ -66,6 +66,7 @@
       var guide = c.labGuide || '';
       var guideBtn = '<a class="btn primary" href="' + esc(guide) + '">' + esc(c.labGuideLabel || 'Open the lab guide') + '</a>';
       var guideNote = 'The latest published lab activities for this course.';
+      cards.className = 'grid ' + (guide ? 'c3' : 'c2');
       cards.innerHTML =
         '<div><span class="kicker">Before you come</span><h3>Access</h3><p>' + esc(access) + '</p>' + canvas + '</div>' +
         '<div><span class="kicker">When you need help</span><h3>Tech support</h3><p>Book time with the lab team for help with equipment, software or setup.</p><a class="btn primary" data-link="booking">Book tech support</a></div>' +
