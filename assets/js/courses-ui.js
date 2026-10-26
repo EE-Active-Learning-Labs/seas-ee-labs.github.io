@@ -63,13 +63,13 @@
       document.getElementById('cTitle').textContent = c.title || 'Access information, tech support and lab guide.';
       var access = c.access || D.access || '';
       var canvas = c.canvas ? '<p><a class="btn" href="' + esc(c.canvas) + '" target="_blank" rel="noopener">Open course Canvas</a></p>' : '';
-      var own = !!c.labGuide, guide = c.labGuide || D.labFolder || '';
-      var guideBtn = guide ? '<a class="btn primary" href="' + esc(guide) + '" target="_blank" rel="noopener">' + esc(c.labGuideLabel || (own ? 'Open the lab guide' : 'Open the lab activities folder')) + '</a>' : '<a class="btn primary" aria-disabled="true">Lab guide coming soon</a>';
-      var guideNote = own ? 'The latest published lab activities for this course.' : 'This folder holds lab activities for the courses we support. Open the folder for ' + esc(c.code) + '.';
+      var guide = c.labGuide || '';
+      var guideBtn = '<a class="btn primary" href="' + esc(guide) + '">' + esc(c.labGuideLabel || 'Open the lab guide') + '</a>';
+      var guideNote = 'The latest published lab activities for this course.';
       cards.innerHTML =
         '<div><span class="kicker">Before you come</span><h3>Access</h3><p>' + esc(access) + '</p>' + canvas + '</div>' +
         '<div><span class="kicker">When you need help</span><h3>Tech support</h3><p>Book time with the lab team for help with equipment, software or setup.</p><a class="btn primary" data-link="booking">Book tech support</a></div>' +
-        '<div><span class="kicker">While you work</span><h3>Lab guide</h3><p>' + guideNote + '</p>' + guideBtn + '</div>';
+        (guide ? '<div><span class="kicker">While you work</span><h3>Lab guide</h3><p>' + guideNote + '</p>' + guideBtn + '</div>' : '');
       extras.innerHTML = (c.extras && c.extras.length) ? '<div class="s-head" style="margin-top:40px"><h2>More for ' + esc(c.code) + '</h2></div><ul class="rules">' + c.extras.map(function(x){ return '<li><a href="' + esc(x.href) + '">' + esc(x.label) + '</a></li>'; }).join('') + '</ul>' : '';
       if(window.EE_wire) window.EE_wire(cards);
     }
