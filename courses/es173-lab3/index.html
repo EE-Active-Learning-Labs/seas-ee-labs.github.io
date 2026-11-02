@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ES173 Lab 3 Student Walkthrough</title>
+<meta name="description" content="ES173 Lab 3 walkthrough: how light and semiconductor band gaps interact, and how that shows up in a photodiode IV curve.">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crimson:#A51C30;--crimson-ink:#8C1527;--on-crimson:#FFFFFF;
+  --ink:#161616;--ink-2:#4B4B4B;--paper:#FFFFFF;--mist:#F4F4F4;--rule:#DCDCDC;--rule-2:#B5B5B5;
+  --n:#1F5FA6;--p:#6B3FA0;--ok:#1E7A4B;--focus:#1F5FA6;
+  --caution-bg:#FFF5DE;--caution-ink:#553600;--caution-rule:#C98A1B;
+  --stop-bg:#FBE8EB;--stop-ink:#6A0E1E;--stop-rule:#A51C30;
+  --think-bg:#EDF3FB;--think-rule:#1F5FA6;
+  --hero:#151515;--hero-ink:#F4F4F4;--hero-2:#ABABAB;--beam:#FF2E48;--hero-n:#7FB2F0;--hero-p:#C3A2F2;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Public Sans','Helvetica Neue',Arial,system-ui,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --crimson:#E25A6E;--crimson-ink:#F08797;--on-crimson:#1A0A0D;
+    --ink:#ECECEC;--ink-2:#B3B3B3;--paper:#1B1B1B;--mist:#121212;--rule:#303030;--rule-2:#4A4A4A;
+    --n:#6CA6E8;--p:#B28CE8;--ok:#5CC48E;--focus:#8AB4F8;
+    --caution-bg:#34270C;--caution-ink:#F2D79E;--caution-rule:#8A6420;
+    --stop-bg:#3A1219;--stop-ink:#F6C3CB;--stop-rule:#E25A6E;
+    --think-bg:#14202D;--think-rule:#6CA6E8;
+    --hero:#0B0B0B;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+    --crimson:#E25A6E;--crimson-ink:#F08797;--on-crimson:#1A0A0D;
+    --ink:#ECECEC;--ink-2:#B3B3B3;--paper:#1B1B1B;--mist:#121212;--rule:#303030;--rule-2:#4A4A4A;
+    --n:#6CA6E8;--p:#B28CE8;--ok:#5CC48E;--focus:#8AB4F8;
+    --caution-bg:#34270C;--caution-ink:#F2D79E;--caution-rule:#8A6420;
+    --stop-bg:#3A1219;--stop-ink:#F6C3CB;--stop-rule:#E25A6E;
+    --think-bg:#14202D;--think-rule:#6CA6E8;
+    --hero:#0B0B0B;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:auto;scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+@media(min-width:1100px){html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 24px)}}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 var(--sans);-webkit-text-size-adjust:100%;font-feature-settings:"tnum" 0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:60}
+a{color:var(--crimson);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:3px}
+.skip{position:absolute;left:-9999px;top:0}
+.skip:focus{left:12px;top:12px;z-index:99;background:var(--paper);padding:8px 14px}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.12;margin:0 0 .45em;letter-spacing:-.012em}
+h2{font-size:clamp(1.75rem,3.2vw,2.4rem)}
+h3{font-size:1.32rem;font-weight:600}
+h4{font-family:var(--sans);font-size:1rem;font-weight:700;letter-spacing:0;margin-bottom:.35em}
+p{margin:0 0 1em;max-width:68ch}
+ul,ol{padding-left:1.2em;max-width:68ch}
+li{margin-bottom:.35em}
+
+/* site header */
+.site{border-top:6px solid var(--crimson);background:var(--paper);border-bottom:1px solid var(--rule)}
+.site-in{max-width:1280px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;flex-direction:column;text-decoration:none;color:var(--ink);line-height:1.2}
+.brand .b1{font-size:.78rem;color:var(--ink-2)}
+.brand .b2{font-family:var(--serif);font-weight:600;font-size:1.35rem}
+.site .tag{font-size:.85rem;font-weight:700;color:var(--crimson);border:1.5px solid var(--crimson);padding:4px 10px;border-radius:2px;white-space:nowrap}
+
+/* hero */
+.hero{background:var(--hero);color:var(--hero-ink);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:4px;background:var(--crimson)}
+.hero-in{max-width:1280px;margin:0 auto;padding:44px 24px 56px;display:grid;gap:36px;grid-template-columns:1fr}
+@media(min-width:960px){.hero-in{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);align-items:center;padding:64px 24px 76px}}
+.crumb{font-size:.86rem;color:var(--hero-2);margin-bottom:22px}
+.crumb a{color:var(--hero-ink)}
+.hero h1{font-size:clamp(2.3rem,5.4vw,4.1rem);font-weight:500;letter-spacing:-.02em;margin-bottom:.35em;max-width:16ch}
+.hero-lede{font-size:1.16rem;color:#D6D6D6;max-width:52ch}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:28px 0 30px;border-top:1px solid #3A3A3A;max-width:560px}
+@media(min-width:560px){.facts{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.facts div{padding:12px 14px 12px 0;border-bottom:1px solid #3A3A3A}
+.facts dt{font-size:.8rem;color:var(--hero-2)}
+.facts dd{margin:2px 0 0;font-weight:700}
+.hero-fig{margin:0}
+.hero-fig svg{display:block;width:100%;height:auto}
+.hero-fig figcaption{font-size:.82rem;color:var(--hero-2);margin-top:8px}
+
+/* buttons */
+.btn,button{font:inherit;font-weight:700;font-size:.97rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 20px;border-radius:2px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);text-decoration:none;transition:background .15s,color .15s,border-color .15s}
+.btn:hover,button:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.btn.primary,button.primary{background:var(--crimson);border-color:var(--crimson);color:var(--on-crimson)}
+.btn.primary:hover,button.primary:hover:not(:disabled){background:var(--crimson-ink);border-color:var(--crimson-ink);color:var(--on-crimson)}
+.hero .btn{border-color:var(--hero-ink);color:var(--hero-ink)}
+.hero .btn:hover{background:var(--hero-ink);color:var(--hero)}
+.hero .btn.primary{border-color:var(--crimson);color:var(--on-crimson)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.sm{min-height:40px;padding:6px 14px;font-size:.9rem}
+
+/* layout */
+.layout{max-width:1280px;margin:0 auto;padding:0 24px}
+@media(min-width:1100px){.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:56px}}
+.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--paper);border-bottom:1px solid var(--rule);margin:0 -24px;padding:8px 12px}
+.rail-h{display:none}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:none}
+.rail ol::-webkit-scrollbar{display:none}
+.rail li{margin:0}
+.rail a{display:flex;align-items:center;gap:8px;white-space:nowrap;text-decoration:none;color:var(--ink-2);padding:8px 12px;border-radius:2px;font-size:.92rem}
+.rail a:hover{color:var(--ink);background:var(--mist)}
+.rail .rn{font-family:var(--serif);font-weight:600;color:var(--ink-2);min-width:1.1em}
+.rail .rc{display:none;font-size:.78rem;color:var(--ink-2);margin-left:auto}
+.rail li.active a{color:var(--ink);background:var(--mist);box-shadow:inset 3px 0 0 var(--crimson)}
+.rail li.complete .rn{color:var(--ok)}
+.rail li.mine .rt::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--crimson);margin-left:8px;vertical-align:2px}
+.rail-prog{display:none}
+@media(min-width:1100px){
+  .rail{top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;margin:48px 0 0;padding:0;border:0;background:none;max-height:calc(100vh - 48px);overflow:auto}
+  .rail-h{display:block;font-family:var(--serif);font-weight:600;font-size:1.15rem;margin:0 0 10px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+  .rail ol{flex-direction:column;gap:0;overflow:visible}
+  .rail a{white-space:normal;padding:9px 10px;border-bottom:1px solid var(--rule)}
+  .rail .rc{display:inline}
+  .rail-prog{display:block;margin-top:18px;font-size:.85rem;color:var(--ink-2)}
+  .rail-prog .bar{height:4px;background:var(--rule);margin-top:6px}
+  .rail-prog .bar i{display:block;height:100%;background:var(--crimson);width:0;transition:width .3s}
+}
+main{min-width:0;padding-bottom:40px}
+
+/* chapters */
+.chapter{padding:56px 0 24px;border-bottom:1px solid var(--rule)}
+.ch-head{display:grid;grid-template-columns:auto 1fr;gap:4px 20px;align-items:start;margin-bottom:26px}
+.ch-num{font-family:var(--serif);font-size:3.2rem;line-height:.9;color:var(--crimson);font-weight:500;min-width:1.2ch}
+.ch-head h2{margin-bottom:.2em}
+.ch-sum{color:var(--ink-2);margin:0;font-size:1.05rem}
+.mine-badge{display:none;grid-column:2;justify-self:start;margin-top:8px;font-size:.82rem;font-weight:700;color:var(--on-crimson);background:var(--crimson);padding:3px 10px;border-radius:2px}
+.chapter.mine .mine-badge{display:inline-block}
+.role-line{font-size:.92rem;color:var(--ink-2);margin:-10px 0 18px}
+.role-line b{color:var(--ink)}
+
+/* checklist steps */
+ol.steps,ul.checks{list-style:none;margin:0 0 1.6em;padding:0;counter-reset:s;max-width:74ch;border-top:1px solid var(--rule)}
+ol.steps>li,ul.checks>li{margin:0;border-bottom:1px solid var(--rule)}
+ol.steps>li{counter-increment:s}
+.ckl{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:13px 8px;cursor:pointer;transition:background .15s}
+ol.steps .ckl{grid-template-columns:1.6em auto 1fr}
+ol.steps .ckl::before{content:counter(s);font-family:var(--serif);font-weight:600;color:var(--ink-2);font-size:1.05rem;line-height:1.5}
+.ckl:hover{background:var(--mist)}
+input.ck{appearance:none;-webkit-appearance:none;width:22px;height:22px;margin:2px 0 0;border:2px solid var(--rule-2);border-radius:3px;background:var(--paper);display:grid;place-content:center;cursor:pointer;transition:background .15s,border-color .15s}
+input.ck::after{content:"";width:11px;height:6px;border-left:2.5px solid var(--on-crimson);border-bottom:2.5px solid var(--on-crimson);transform:translate(0,-1px) rotate(-45deg) scale(0);transition:transform .15s}
+input.ck:checked{background:var(--crimson);border-color:var(--crimson)}
+input.ck:checked::after{transform:translate(0,-1px) rotate(-45deg) scale(1)}
+input.ck:checked~.tx{color:var(--ink-2)}
+.tx .sub{display:block;font-size:.92rem;color:var(--ink-2);margin-top:3px}
+
+/* callouts */
+.callout{border-left:4px solid;padding:16px 20px;margin:0 0 1.5em;max-width:74ch}
+.callout h4{margin-top:0}
+.callout>:last-child{margin-bottom:0}
+.callout p{max-width:none}
+.callout.note{background:var(--mist);border-color:var(--ink)}
+.callout.caution{background:var(--caution-bg);border-color:var(--caution-rule);color:var(--caution-ink)}
+.callout.stop{background:var(--stop-bg);border-color:var(--stop-rule);color:var(--stop-ink)}
+.callout.think{background:var(--think-bg);border-color:var(--think-rule)}
+
+/* panels and grids */
+.panel{background:var(--mist);padding:24px;margin-bottom:24px}
+.panel>:last-child{margin-bottom:0}
+.panel h3{margin-top:0}
+.cards{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-bottom:28px;grid-template-columns:1fr}
+@media(min-width:720px){.cards.c2{grid-template-columns:repeat(2,1fr)}.cards.c3{grid-template-columns:repeat(3,1fr)}}
+.cards>div{background:var(--paper);padding:22px}
+.cards h3{font-size:1.18rem;margin-top:0}
+.cards p:last-child{margin-bottom:0}
+.kicker{display:block;font-size:.84rem;font-weight:700;color:var(--crimson);margin-bottom:6px}
+
+/* forms */
+label.f{display:block;font-weight:700;font-size:.92rem;margin:0 0 6px}
+input[type=text],input[type=number],input[type=date],select,textarea{font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--rule-2);border-radius:2px;padding:10px 12px;max-width:100%;min-height:46px}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+textarea{width:100%;min-height:110px;resize:vertical;line-height:1.5}
+.row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-bottom:16px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1.5px solid var(--ink);border-radius:2px}
+.seg button{border:0;border-radius:0;min-height:44px}
+.seg button+button{border-left:1.5px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+/* tables */
+.tw{overflow-x:auto;margin-bottom:1.6em;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:.96rem}
+th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+thead th{border-bottom:2px solid var(--ink);font-weight:700;white-space:nowrap}
+tbody th{font-weight:700}
+table.wide{min-width:680px}
+.spec{max-width:620px}
+.spec td:first-child{color:var(--ink-2);width:45%}
+.spec td:last-child{font-weight:700}
+
+/* details */
+details.acc{border-top:1px solid var(--rule);max-width:78ch}
+details.acc:last-of-type{border-bottom:1px solid var(--rule)}
+details.acc summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 4px;font-family:var(--serif);font-weight:600;font-size:1.22rem}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"";width:12px;height:12px;border-right:2px solid var(--crimson);border-bottom:2px solid var(--crimson);transform:rotate(45deg) translateY(-3px);transition:transform .2s;flex:none}
+details.acc[open] summary::after{transform:rotate(-135deg) translateY(-3px)}
+details.acc>div{padding:0 4px 18px}
+
+/* chart */
+.chart svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule)}
+.chart text{fill:var(--ink-2);font:12px var(--sans)}
+.chart text.t{fill:var(--ink);font-weight:700}
+.chart .grid{stroke:var(--rule);stroke-width:1}
+.chart .axis{stroke:var(--ink);stroke-width:1.5}
+.legend{display:flex;gap:20px;flex-wrap:wrap;margin:10px 0;font-size:.92rem}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+.res{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:14px}
+.res>div{background:var(--paper);padding:16px 18px}
+.res .big{font:500 2rem/1.1 var(--serif);display:block;margin:4px 0}
+.datatbl input{width:110px;min-height:40px;padding:6px 10px}
+.muted{color:var(--ink-2)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--mist);padding:3px 7px;border-radius:2px;word-break:break-all}
+
+/* footer */
+.foot{background:var(--hero);color:var(--hero-2);margin-top:64px;border-top:4px solid var(--crimson)}
+.foot-in{max-width:1280px;margin:0 auto;padding:40px 24px 48px;display:grid;gap:24px;grid-template-columns:1fr;font-size:.92rem}
+@media(min-width:800px){.foot-in{grid-template-columns:1.2fr 1fr 1fr}}
+.foot b{display:block;color:var(--hero-ink);font-family:var(--serif);font-size:1.15rem;font-weight:600;margin-bottom:6px}
+.foot a{color:var(--hero-ink)}
+.foot p{margin:0 0 .4em}
+
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
+@media print{.rail,.site,body::before,button{display:none!important}.hero{background:none;color:#000}.layout{display:block}}
+input.ck-plain{appearance:none;-webkit-appearance:none;width:22px;height:22px;margin:2px 0 0;border:2px solid var(--rule-2);border-radius:3px;background:var(--paper);display:grid;place-content:center;cursor:pointer}
+input.ck-plain::after{content:"";width:11px;height:6px;border-left:2.5px solid var(--paper);border-bottom:2.5px solid var(--paper);transform:translate(0,-1px) rotate(-45deg) scale(0);transition:transform .15s}
+input.ck-plain:checked{background:var(--ink);border-color:var(--ink)}
+input.ck-plain:checked::after{transform:translate(0,-1px) rotate(-45deg) scale(1)}
+.qlist{border-top:2px solid var(--ink)}
+.q{display:grid;grid-template-columns:76px 1fr;gap:18px;padding:22px 0;border-bottom:1px solid var(--rule)}
+.q-pts{font:500 2.4rem/1 var(--serif);color:var(--crimson)}
+.q-pts small{display:block;font:700 .78rem var(--sans);color:var(--ink-2);margin-top:4px}
+.q h3{margin-bottom:.3em}
+.q p{margin-bottom:.5em}
+.q .hint{color:var(--ink-2);font-size:.95rem;margin:0}
+/* Lab 3 additions */
+:root{--uv:#6A3FD0;--bl:#1D5FD1;--gr:#1C8A45;--rd:#C8233A;--ir:#7A4B2E;--cb:#1F5FA6;--vb:#6B3FA0;--gapfill:#F7F7F7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--uv:#A98BF0;--bl:#6FA2F2;--gr:#5CC48E;--rd:#F07085;--ir:#D59A72;--cb:#6CA6E8;--vb:#B28CE8;--gapfill:#222}}
+:root[data-theme="dark"]{--uv:#A98BF0;--bl:#6FA2F2;--gr:#5CC48E;--rd:#F07085;--ir:#D59A72;--cb:#6CA6E8;--vb:#B28CE8;--gapfill:#222}
+.viz{display:grid;gap:24px;grid-template-columns:1fr;align-items:start}
+@media(min-width:900px){.viz{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+.viz svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule)}
+.viz text,.strip text{fill:var(--ink-2);font:12px var(--sans)}
+.viz text.t,.strip text.t{fill:var(--ink);font-weight:700}
+.strip svg{width:100%;height:auto;display:block;margin-top:14px}
+input[type=range]{width:100%;accent-color:var(--crimson);min-height:32px}
+.ctl{margin-bottom:16px}
+.ctl .f{display:flex;justify-content:space-between;gap:12px}
+.ctl .f output{font-weight:700;color:var(--ink)}
+.lights{display:flex;flex-wrap:wrap;gap:8px}
+.lights button{min-height:40px;padding:6px 12px;font-size:.9rem;border-width:1.5px}
+.lights button .sw{display:inline-block;width:10px;height:10px;border-radius:50%}
+.lights button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.lights button[aria-pressed="true"] .muted{color:inherit;opacity:.8}
+.verdict{border-left:4px solid var(--rule-2);padding:12px 16px;background:var(--mist);margin:0 0 14px}
+.verdict.yes{border-color:var(--ok)}
+.verdict.no{border-color:var(--crimson)}
+.verdict .big{display:block;font:500 2rem/1.1 var(--serif);margin-bottom:4px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin:0 0 14px}
+.stats>div{background:var(--paper);padding:10px 12px}
+.stats dt{font-size:.8rem;color:var(--ink-2)}
+.stats dd{margin:2px 0 0;font:500 1.35rem/1.2 var(--serif)}
+.depthbars{display:grid;gap:8px;margin:0 0 14px}
+.depthbars>div{display:grid;grid-template-columns:96px 1fr 52px;gap:10px;align-items:center;font-size:.9rem}
+.depthbars .bar{height:12px;background:var(--rule)}
+.depthbars .bar i{display:block;height:100%;background:var(--crimson)}
+.datatbl td,.datatbl th{vertical-align:middle}
+.datatbl input{width:100px}
+.src{display:inline-flex;align-items:center;gap:8px;font-weight:700}
+.src i{width:11px;height:11px;border-radius:50%;display:inline-block}
+.pill{display:inline-block;font-size:.8rem;font-weight:700;padding:2px 8px;border-radius:2px;border:1.5px solid currentColor}
+.matlist{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0;padding:0;list-style:none;max-width:none}
+.matlist li{margin:0;font-size:.88rem;font-weight:700;padding:3px 9px;background:var(--mist);border:1px solid var(--rule)}
+.eqn{font-family:var(--serif);font-size:1.2rem;background:var(--mist);padding:10px 16px;display:inline-block;margin:0 0 1em}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the walkthrough</a>
+<header class="site"><div class="site-in">
+  <a class="brand" href="https://seas.harvard.edu/active-learning-labs" target="_blank" rel="noopener"><span class="b1">Harvard John A. Paulson School of Engineering and Applied Sciences</span><span class="b2">Active Learning Labs</span></a>
+  <a class="tag" style="text-decoration:none" href="../course/#es173">Back to ES 173</a>
+</div></header>
+
+<section class="hero" aria-labelledby="h1">
+  <div class="hero-in">
+    <div>
+      <p class="crumb"><a href="../../">EE Active Learning Labs</a> / <a href="../course/#es173">ES 173</a> / Lab 3</p>
+      <h1 id="h1">Light, band gaps and photodiodes</h1>
+      <p class="hero-lede">Five flashlights, two photodiodes, one question. Which colors of light make each diode respond, and what does that tell you about what the diode is made of?</p>
+      <dl class="facts">
+        <div><dt>Devices</dt><dd>2 photodiodes</dd></div>
+        <div><dt>Stations</dt><dd>LED, VCSEL</dd></div>
+        <div><dt>Light sources</dt><dd>UV to IR</dd></div>
+        <div><dt>Report</dt><dd>One per group</dd></div>
+      </dl>
+      <div class="row" style="margin:0"><a class="btn primary" href="#c-start">Start the walkthrough</a><a class="btn" href="#c-gap">Explore band gaps</a></div>
+    </div>
+    <figure class="hero-fig">
+      <svg viewBox="0 0 560 300" role="img" aria-label="Schematic. Five flashlight beams, ultraviolet, blue, green, red and infrared, shine onto a photodiode held by two probe tips. A small IV plot shows the reverse current growing under light.">
+        <defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter></defs>
+        <g stroke-width="10" opacity=".35" filter="url(#glow)" stroke-linecap="round">
+          <line x1="60" y1="40" x2="250" y2="214" stroke="#A98BF0"/><line x1="140" y1="22" x2="262" y2="210" stroke="#6FA2F2"/><line x1="230" y1="14" x2="275" y2="208" stroke="#5CC48E"/><line x1="320" y1="22" x2="288" y2="210" stroke="#FF5A6E"/><line x1="400" y1="40" x2="300" y2="214" stroke="#D59A72" stroke-dasharray="4 8"/>
+        </g>
+        <g stroke-width="3" stroke-linecap="round">
+          <line x1="60" y1="40" x2="250" y2="214" stroke="#A98BF0"/><line x1="140" y1="22" x2="262" y2="210" stroke="#6FA2F2"/><line x1="230" y1="14" x2="275" y2="208" stroke="#5CC48E"/><line x1="320" y1="22" x2="288" y2="210" stroke="#FF5A6E"/><line x1="400" y1="40" x2="300" y2="214" stroke="#D59A72" stroke-dasharray="6 6"/>
+        </g>
+        <rect x="200" y="214" width="150" height="14" fill="#8C96A0"/>
+        <g fill="#D9B44A"><rect x="214" y="210" width="10" height="4"/><rect x="236" y="210" width="10" height="4"/><rect x="258" y="210" width="10" height="4"/><rect x="280" y="210" width="10" height="4"/><rect x="302" y="210" width="10" height="4"/><rect x="324" y="210" width="10" height="4"/></g>
+        <rect x="180" y="228" width="190" height="16" fill="#3A3A3A"/>
+        <path d="M150 170 L228 208" stroke="#BDBDBD" stroke-width="2.5"/><path d="M420 200 L366 236" stroke="#BDBDBD" stroke-width="2.5"/>
+        <g font-family="Public Sans, Arial, sans-serif" font-size="13" font-weight="700">
+          <text x="44" y="32" fill="#A98BF0">UV</text><text x="122" y="16" fill="#6FA2F2">Blue</text><text x="214" y="10" fill="#5CC48E">Green</text><text x="312" y="16" fill="#FF8A99">Red</text><text x="394" y="32" fill="#D59A72">IR</text>
+          <text x="275" y="266" text-anchor="middle" fill="#F4F4F4">photodiode on the probe station</text>
+        </g>
+        <g transform="translate(430,96)">
+          <rect width="118" height="96" fill="none" stroke="#3A3A3A"/>
+          <line x1="0" y1="48" x2="118" y2="48" stroke="#555"/><line x1="88" y1="0" x2="88" y2="96" stroke="#555"/>
+          <path d="M4 52 L84 51 Q92 50 100 30 L106 4" fill="none" stroke="#ABABAB" stroke-width="2"/>
+          <path d="M4 76 L84 75 Q92 74 100 54 L108 20" fill="none" stroke="#FF5A6E" stroke-width="2"/>
+          <text x="59" y="112" text-anchor="middle" fill="#ABABAB" font-size="11" font-family="Public Sans, Arial, sans-serif">dark vs lit IV</text>
+        </g>
+      </svg>
+      <figcaption>Schematic, not to scale. The infrared beam is dashed because you cannot see it.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="layout">
+  <nav class="rail" aria-label="Walkthrough chapters">
+    <p class="rail-h">Walkthrough</p>
+    <ol id="railList"></ol>
+    <div class="rail-prog"><span id="progTxt">0% complete</span><div class="bar"><i id="progBar"></i></div></div>
+  </nav>
+
+<main id="main">
+
+<section class="chapter" id="c-start" data-title="Before you start">
+  <header class="ch-head"><span class="ch-num">1</span><div><h2>Before you start</h2><p class="ch-sum">Where this lab fits, what you will hand in, and a prediction to test.</p></div></header>
+  <div class="cards c3">
+    <div><span class="kicker">Lab 1</span><h3>Light on a metal contact</h3><p>You lit up n+ silicon under metal contacts and may have seen the IV change with the light on.</p></div>
+    <div><span class="kicker">Lab 2</span><h3>Light drives a reaction</h3><p>You lit up n-type and p-type GaAs in acid and may have seen them etch differently.</p></div>
+    <div><span class="kicker">Lab 3, today</span><h3>Light read out as current</h3><p>You compare photodiodes with different band gaps, then look at devices that run the process in reverse and emit light.</p></div>
+  </div>
+  <h3>Objectives</h3>
+  <ul>
+    <li>Explore how light and semiconductors interact, both when light is absorbed and when it is emitted.</li>
+    <li>Use your data to infer what a device is made of from what it absorbs or emits.</li>
+  </ul>
+  <div class="callout note"><h4>What you hand in</h4><p>One group lab report per group with every member’s name and an answer to each question in chapter 10. Use your own IV captures, photos and spectra as evidence.</p></div>
+  <div class="callout think">
+    <h4>Make a prediction</h4>
+    <p>Silicon’s band gap is about 1.11 eV. Before you measure, decide which of the five flashlights should make a silicon photodiode respond, and which should give the largest change. Then guess what a diode made from a material with a smaller gap would do differently.</p>
+    <label class="f" for="pred">Our prediction</label>
+    <textarea id="pred" data-save="pred" placeholder="We expect the Si photodiode to respond to... and most strongly to... because..."></textarea>
+  </div>
+  <div class="row">
+    <div><label class="f" for="grp">Group number</label><input type="text" id="grp" data-save="grp" style="width:140px"></div>
+    <div style="flex:1 1 320px"><label class="f" for="members">Group members</label><input type="text" id="members" data-save="members" style="width:100%" placeholder="Names, separated by commas"></div>
+  </div>
+</section>
+
+<section class="chapter" id="c-safety" data-title="Safety">
+  <header class="ch-head"><span class="ch-num">2</span><div><h2>Safety</h2><p class="ch-sum">No chemicals today, but there are bright and invisible light sources, a laser and sharp probe tips.</p></div></header>
+  <div class="cards c3">
+    <div><span class="kicker">Light</span><h3>UV and IR flashlights</h3><p>UV light can harm your eyes and the IR beam is invisible, so your blink reflex will not protect you. Point every flashlight at the sample only.</p></div>
+    <div><span class="kicker">Laser</span><h3>VCSEL demo</h3><p>A VCSEL is a laser, and its near-infrared light may be invisible. Look at its spot only through the camera or spectrometer set up by lab staff.</p></div>
+    <div><span class="kicker">Tools</span><h3>Probe tips</h3><p>The tips are sharp and easily bent. Lower them gently, and lift them before you move a sample.</p></div>
+  </div>
+  <ul class="checks">
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">I will never shine a flashlight into anyone’s eyes, including my own, and I will keep beams pointed down at the sample.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">I treat the IR flashlight as on whenever its switch is on, even though I cannot see it.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">At the VCSEL station I will not look into the device or its beam, and I will follow lab staff.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">I handle the ES177 wafer samples with tweezers by their edges.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">I tell a TF right away about broken samples, bent probes or anything that gets hot.</span></label></li>
+  </ul>
+</section>
+
+<section class="chapter" id="c-gap" data-title="Light meets a band gap">
+  <header class="ch-head"><span class="ch-num">3</span><div><h2>Light meets a band gap</h2><p class="ch-sum">A photon is absorbed only if it carries at least the band gap energy. Try it.</p></div></header>
+  <p>A photon’s energy depends only on its wavelength. If that energy is at least the band gap <i>E<sub>g</sub></i>, the photon can lift an electron from the valence band into the conduction band and leave a hole behind. That electron and hole pair is what a photodiode turns into current. If the energy is smaller than the gap, the photon has nothing to excite and passes through.</p>
+  <p class="eqn"><i>E</i> (eV) ≈ 1240 / <i>λ</i> (nm) &nbsp;&nbsp; so &nbsp;&nbsp; cutoff <i>λ<sub>c</sub></i> ≈ 1240 / <i>E<sub>g</sub></i></p>
+  <div class="viz">
+    <div>
+      <svg id="bandSvg" viewBox="0 0 520 300" role="img" aria-label="Band diagram for the selected material and wavelength"></svg>
+    </div>
+    <div>
+      <div class="ctl"><label class="f" for="gWl"><span>Wavelength</span><output id="gWlOut">635 nm</output></label><input type="range" id="gWl" min="250" max="2000" step="1" value="635"></div>
+      <div class="ctl"><span class="f">Jump to a lab flashlight</span><div class="lights" id="gLights" role="group" aria-label="Flashlights"></div></div>
+      <div class="ctl"><label class="f" for="gMat">Material, band gap at 300 K</label><select id="gMat" style="width:100%"></select></div>
+      <div class="ctl" id="gCustomWrap" hidden><label class="f" for="gCustom">Custom band gap in eV</label><input type="number" id="gCustom" step="0.01" min="0.1" max="6" value="1.50" style="width:140px"></div>
+      <div class="verdict" id="gVerdict" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="strip"><svg id="stripSvg" viewBox="0 0 760 120" role="img" aria-label="Spectrum from 250 to 2000 nanometers showing the flashlights and the absorption cutoff of the selected material"></svg></div>
+  <p class="muted" style="font-size:.9rem;margin-top:8px">Flashlight markers are approximate peak wavelengths. Each flashlight emits a band of wavelengths, so use the measured spectra in Appendix 3 of your handout for real numbers, especially the long wavelength edge of each one.</p>
+  <div class="callout think"><h4>Two things to notice</h4><ul><li>Every photon above the gap makes at most one electron and hole pair. The extra energy, <i>E</i> − <i>E<sub>g</sub></i>, is lost as heat within picoseconds.</li><li>So for the same optical power, longer wavelengths deliver more photons and can give more current, right up until the photon energy falls below the gap and the response collapses.</li></ul></div>
+</section>
+
+<section class="chapter" id="c-depth" data-title="Where light is absorbed">
+  <header class="ch-head"><span class="ch-num">4</span><div><h2>Where the light is absorbed</h2><p class="ch-sum">Above the gap, the question becomes how deep the light gets before it is absorbed.</p></div></header>
+  <p>Light that can be absorbed fades exponentially as it travels into the material, <i>I</i>(<i>x</i>) = <i>I</i><sub>0</sub> e<sup>−α<i>x</i></sup>. The absorption coefficient α depends strongly on wavelength. The penetration depth 1/α is where about 63 percent of the light has been absorbed. In silicon, blue and UV light is absorbed in the first fraction of a micron, while red and infrared reach many microns deep.</p>
+  <p>Depth matters because only pairs made in or near the junction’s depletion region are collected as current. Pairs made right at the surface often recombine before they get there. Pairs made far below the junction may recombine too.</p>
+  <div class="viz">
+    <div><svg id="depthSvg" viewBox="0 0 520 250" role="img" aria-label="Light intensity falling off with depth in silicon at the selected wavelength"></svg></div>
+    <div>
+      <div class="ctl"><label class="f" for="dWl"><span>Wavelength</span><output id="dWlOut">635 nm</output></label><input type="range" id="dWl" min="300" max="1150" step="1" value="635"></div>
+      <div class="ctl"><div class="lights" id="dLights" role="group" aria-label="Flashlights"></div></div>
+      <dl class="stats"><div><dt>α in silicon</dt><dd id="dAlpha"></dd></div><div><dt>Penetration depth 1/α</dt><dd id="dDepth"></dd></div></dl>
+      <p class="f" style="margin-bottom:8px">Share of the light absorbed within</p>
+      <div class="depthbars" id="dBars"></div>
+    </div>
+  </div>
+  <p class="muted" style="font-size:.9rem">Silicon absorption data are approximate room-temperature values from published measurements (M. A. Green, 2008). The junction depth in the figure is illustrative, not the depth of the ES177 devices.</p>
+</section>
+
+<section class="chapter" id="c-iv" data-title="Light in the IV curve">
+  <header class="ch-head"><span class="ch-num">5</span><div><h2>How light shows up in the IV curve</h2><p class="ch-sum">A lit photodiode is a dark diode plus a photocurrent. Watch the curve shift.</p></div></header>
+  <p>In the dark, a PN diode follows the diode equation. Light adds a photocurrent <i>I<sub>ph</sub></i> that flows the opposite way, in the reverse direction, so the whole curve shifts down.</p>
+  <p class="eqn"><i>I</i> = <i>I</i><sub>0</sub> (e<sup><i>V</i>/<i>nV<sub>T</sub></i></sup> − 1) − <i>I<sub>ph</sub></i></p>
+  <p>The shift is easiest to see in reverse bias, where the dark current is tiny. That is why you may need to zoom the current range in WaveForms, as you did in Lab 1. The band gap also sets the dark curve. A smaller gap means a larger dark current <i>I</i><sub>0</sub> and a lower turn-on voltage, so a small-gap diode can show the same photocurrent on top of a bigger background.</p>
+  <div class="viz">
+    <div>
+      <svg id="ivSvg" viewBox="0 0 640 380" role="img" aria-label="Simulated IV curve of a photodiode in the dark and under light"></svg>
+      <div class="legend"><span><span class="dot" style="background:var(--ink-2)"></span>Dark</span><span><span class="dot" id="ivLegDot" style="background:var(--rd)"></span><span id="ivLegTxt">Under light</span></span><span class="muted">Dotted line marks the bias you read</span></div>
+    </div>
+    <div>
+      <div class="ctl"><span class="f">Light source</span><div class="lights" id="ivLights" role="group" aria-label="Light source"></div></div>
+      <div class="ctl"><label class="f" for="ivMat">Diode material</label><select id="ivMat" style="width:100%"></select></div>
+      <div class="ctl"><label class="f" for="ivPow"><span>Light intensity</span><output id="ivPowOut">100%</output></label><input type="range" id="ivPow" min="0" max="100" value="100"></div>
+      <div class="ctl"><label class="f" for="ivBias"><span>Read current at</span><output id="ivBiasOut">−3.0 V</output></label><input type="range" id="ivBias" min="-5" max="0" step="0.1" value="-3"></div>
+      <dl class="stats"><div><dt>Dark</dt><dd id="ivDark"></dd></div><div><dt>Lit</dt><dd id="ivLit"></dd></div><div><dt>Change</dt><dd id="ivDelta"></dd></div></dl>
+    </div>
+  </div>
+  <div class="callout caution"><h4>A model, not your data</h4><p>This simulation gives every flashlight the same optical power and ignores surface losses, so it isolates the effect of wavelength and band gap. Your flashlights are not equally bright, and real diodes lose some blue and UV response at the surface. Expect your measurements to differ, and explain why in your report.</p></div>
+</section>
+
+<section class="chapter" id="c-dev1" data-title="Device 1, Si photodiode">
+  <header class="ch-head"><span class="ch-num">6</span><div><h2>Device 1, a silicon photodiode</h2><p class="ch-sum">A Si PN photodiode fabricated in ES177, measured on the compact probe station.</p></div></header>
+  <p>These devices behave a bit like the Si Schottky devices from Lab 1, with an advantage in controllability you will discuss in lecture. The top contact is rows of gold patterned across the surface.</p>
+  <ol class="steps">
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Set up the Analog Discovery Studio, WaveForms Tracer and the 100 Ω measurement circuit.<span class="sub">Settings are in chapter 11 if you need a reminder.</span></span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Check the setup first. Put both probe tips on the metal base and run a sweep. Ask yourself what curve you expect and whether you got it.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Collect a Si photodiode sample. Place one probe on a top gold contact and the other on the aluminum sample holder.<span class="sub">If you cannot get a good contact on the wafer piece, use the packaged Si photodiode next to it.</span></span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Run a sweep with room lights as they are. Save it as your dark reference, and note the lighting conditions.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Shine each flashlight on the sample in turn, UV, blue, green, red and IR. Keep the distance and angle the same each time.<span class="sub">Measure the distance and write it down. It changes the intensity a lot.</span></span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Adjust the current range until you can see the change between light on and light off.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Export each curve with File, then Export, as CSV and as an image.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Record the current at one reverse bias for each source in the table in chapter 8.</span></label></li>
+  </ol>
+</section>
+
+<section class="chapter" id="c-dev2" data-title="Device 2, mystery photodiode">
+  <header class="ch-head"><span class="ch-num">7</span><div><h2>Device 2, the mystery photodiode</h2><p class="ch-sum">A packaged PN photodiode made from something other than silicon. Your data will tell you what.</p></div></header>
+  <ol class="steps">
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Collect a packaged mystery photodiode and connect it in place of Device 1.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Take a dark reference sweep under the same room lighting as before.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Repeat the five flashlights at the same distance and angle you used for Device 1.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Compare the dark curve with Device 1. Look at the reverse current and where the forward current turns on.</span></label></li>
+    <li><label class="ckl"><input type="checkbox" class="ck"><span class="tx">Export every curve, and record the current at the same reverse bias in the table in chapter 8.</span></label></li>
+  </ol>
+  <div class="callout think"><p>Which flashlight is the longest wavelength that still changes the current? Which is the first that does not? Those two answers bracket the band gap.</p></div>
+</section>
+
+<section class="chapter" id="c-compare" data-title="Compare your data">
+  <header class="ch-head"><span class="ch-num">8</span><div><h2>Compare the two photodiodes</h2><p class="ch-sum">Enter currents at one reverse bias, see the change for each source, and bracket each band gap.</p></div></header>
+  <div class="row">
+    <div><label class="f" for="tBias">Reverse bias you read at, in V</label><input type="number" id="tBias" data-save="tBias" value="-3" step="0.1" style="width:120px"></div>
+    <div><label class="f" for="tUnit">Current unit</label><select id="tUnit" data-save="tUnit"><option>µA</option><option>nA</option><option>mA</option></select></div>
+    <div><label class="f" for="tThr">Counts as a response above</label><select id="tThr" data-save="tThr"><option value="5">5% of the biggest change</option><option value="10" selected>10% of the biggest change</option><option value="20">20% of the biggest change</option></select></div>
+  </div>
+  <p class="muted" style="font-size:.92rem">Enter the current as WaveForms shows it, sign included. The table works out the size of the change from the dark value.</p>
+  <div class="tw"><table class="datatbl wide" id="cmpTbl"><thead><tr><th>Source</th><th>Device 1, Si</th><th>Change</th><th>Device 2, mystery</th><th>Change</th></tr></thead><tbody></tbody></table></div>
+  <div class="row"><button type="button" id="cmpCsv">Copy as CSV</button><button type="button" id="cmpClear">Clear table</button></div>
+  <div class="chart" id="cmpChart"></div>
+  <div class="legend"><span><span class="dot" style="background:var(--n)"></span>Device 1, Si</span><span><span class="dot" style="background:var(--p)"></span>Device 2, mystery</span><span class="muted">Change from dark, as a share of each device’s biggest change</span></div>
+  <div class="res" id="cmpRes" aria-live="polite"></div>
+  <div class="callout caution" style="margin-top:20px"><p>The brackets use approximate flashlight peak wavelengths and a simple threshold. Check them against the spectra in Appendix 3 and the full IV curves. A weak response near the edge of a broad flashlight spectrum can come from its long wavelength tail.</p></div>
+</section>
+
+<section class="chapter" id="c-emit" data-title="Stations, LED and VCSEL">
+  <header class="ch-head"><span class="ch-num">9</span><div><h2>Stations, light coming out</h2><p class="ch-sum">An LED and a VCSEL run the same physics in reverse. An electron and hole recombine and emit a photon near the band gap energy.</p></div></header>
+  <div class="cards c2">
+    <div><span class="kicker">Station 1</span><h3>ES177 LED</h3><p>A PN diode built to make light instead of detect it. Look at its IV curve and its output. What color is it? Measure the peak on the USB spectrometer, which covers 190 to 1100 nm. How broad is the peak in wavelength, and how broad is the glow in space?</p></div>
+    <div><span class="kicker">Station 2</span><h3>VCSEL</h3><p>A vertical-cavity surface-emitting laser about 200 µm by 200 µm, probed with micromanipulators on a precision probe station. Lab staff run this demo. Compare its IV, its spectrum and its beam with the LED.</p></div>
+  </div>
+  <div class="panel">
+    <h3>Emission calculator</h3>
+    <p>Enter what the spectrometer shows. The peak gives the photon energy, which sits close to the band gap of the light-emitting layer. The width tells you how spread out in energy the emitted photons are.</p>
+    <div class="row">
+      <div><label class="f" for="eDev">Device</label><select id="eDev"><option value="led">LED</option><option value="vcsel">VCSEL</option></select></div>
+      <div><label class="f" for="ePk">Peak wavelength in nm</label><input type="number" id="ePk" min="190" max="2000" style="width:140px"></div>
+      <div><label class="f" for="eW">Peak width (FWHM) in nm</label><input type="number" id="eW" min="0" step="0.1" style="width:140px"></div>
+    </div>
+    <div id="eOut" aria-live="polite"><p class="muted">Enter a peak wavelength to see the photon energy.</p></div>
+  </div>
+  <div class="callout think"><p>The materials list compares against Appendix 2 only. Many real emitters are alloys, such as InGaN, whose gap can be tuned between the values of their parent compounds. Decide whether a single compound or an alloy fits your data better.</p></div>
+</section>
+
+<section class="chapter" id="c-report" data-title="Group report">
+  <header class="ch-head"><span class="ch-num">10</span><div><h2>Write the group report</h2><p class="ch-sum">One submission per group, every member’s name, and each answer backed by your own IV curves, spectra or photos.</p></div></header>
+  <div class="qlist" id="qList"></div>
+  <div class="panel" style="margin-top:28px">
+    <h3>Report starter</h3>
+    <p>Builds an outline from your group details, prediction and comparison table. Paste it into your document.</p>
+    <div class="row"><button type="button" class="primary" id="buildRep">Build outline</button><button type="button" id="copyRep">Copy outline</button></div>
+    <label class="f" for="repOut">Outline</label>
+    <textarea id="repOut" style="min-height:240px" readonly></textarea>
+  </div>
+</section>
+
+<section class="chapter" id="c-setup" data-title="Setup reference">
+  <header class="ch-head"><span class="ch-num">11</span><div><h2>Setup reference</h2><p class="ch-sum">Analog Discovery Studio, WaveForms Tracer and the compact probe station, as in Lab 1.</p></div></header>
+  <div class="cards c2">
+    <div><h3>Tracer settings</h3>
+      <div class="tw" style="margin:0"><table class="spec"><tbody>
+        <tr><td>Log in</td><td>Lab PC, Harvard credentials</td></tr>
+        <tr><td>WaveForms tool</td><td>Tracer</td></tr>
+        <tr><td>Device type</td><td>Diode</td></tr>
+        <tr><td>Adapter</td><td>No Adapter</td></tr>
+        <tr><td>Sweep</td><td>Vra, −5 to 5 V</td></tr>
+        <tr><td>Series resistor R</td><td>100 Ω</td></tr>
+        <tr><td>Scope switches</td><td>Both ON, down</td></tr>
+      </tbody></table></div></div>
+    <div><h3>How the measurement works</h3><p>The Studio sweeps the voltage across a 100 Ω resistor in series with your device. It measures the voltage across each, works out the current from Ohm’s law, <i>I</i> = <i>V<sub>R</sub></i>/<i>R</i>, and plots that current against the device voltage.</p><p>Single runs one sweep. Run repeats until you press Stop. Export with File, then Export, as CSV data or an image.</p></div>
+  </div>
+  <div class="callout note"><p>Build the circuit on the Studio breadboard to match the example in the lab and the diagram in Appendix 1 of your handout. Ask a TF if anything looks different.</p></div>
+</section>
+
+<section class="chapter" id="c-help" data-title="Help" data-nonum="1">
+  <header class="ch-head" style="grid-template-columns:1fr"><div><h2>If something looks wrong</h2><p class="ch-sum">Common snags and what to try. When in doubt, ask your TF.</p></div></header>
+  <details class="acc"><summary>The curve does not change with the light</summary><div><p>Zoom the current range way down and look in reverse bias. Bring the flashlight closer and aim it at the active area between the gold fingers. If nothing changes for any source, check your probe contact with a fresh sweep.</p></div></details>
+  <details class="acc"><summary>The curve is a straight line through zero</summary><div><p>Both probes may be touching metal that is shorted together, or you are measuring only the resistor. Lift and replace the top probe on a gold contact.</p></div></details>
+  <details class="acc"><summary>The curve is flat at zero everywhere</summary><div><p>You likely have an open circuit. Check that each probe touches metal, the jumpers are seated, and both scope switches are on.</p></div></details>
+  <details class="acc"><summary>The trace is noisy or jumps around</summary><div><p>Room lights and flickering screens add signal. Shade the sample with your hand or a card, keep the probe cables still, and average a few sweeps.</p></div></details>
+  <details class="acc"><summary>Our results flip sign compared with the plots here</summary><div><p>Swapping the probes flips which side of the diode is positive. That is fine. State your polarity in the report and keep it the same for every measurement.</p></div></details>
+  <details class="acc"><summary>We cannot tell whether the IR flashlight is on</summary><div><p>Look at it through a phone camera, which often shows IR as a purple glow. Do not look at it directly.</p></div></details>
+</section>
+
+</main>
+</div>
+
+<footer class="foot"><div class="foot-in">
+  <div><b>Active Learning Labs</b><p>Harvard John A. Paulson School of Engineering and Applied Sciences</p><p>Science and Engineering Complex, 150 Western Avenue, Boston, MA 02134</p></div>
+  <div><b>This lab</b><p>ES173 Introduction to Electronic and Photonic Devices</p><p>Lab 3, light and semiconductor interactions</p><p><a href="../es173-lab2/">Lab 2 walkthrough</a></p></div>
+  <div><b>Questions</b><p>Ask your TF first. Follow your TF and lab staff wherever they differ from this page.</p><p><a href="https://seas.harvard.edu/active-learning-labs/course-support/lab-safety" target="_blank" rel="noopener">ALL lab safety</a></p></div>
+</div></footer>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function initCommon(P,onChange){
+  /* rail */
+  const chapters=$$('section.chapter');const rail=$('#railList');let num=0;
+  chapters.forEach(s=>{
+    const li=document.createElement('li');li.dataset.for=s.id;
+    const n=s.dataset.nonum?'':String(++num);
+    li.innerHTML='<a href="#'+s.id+'"><span class="rn">'+n+'</span><span class="rt">'+s.dataset.title+'</span><span class="rc"></span></a>';
+    rail.appendChild(li);
+  });
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){$$('#railList li').forEach(l=>l.classList.toggle('active',l.dataset.for===e.target.id));const a=$('#railList li.active');if(a&&window.innerWidth<1100){const r=a.parentElement;r.scrollTo({left:a.offsetLeft-24,behavior:RM?'auto':'smooth'})}}})},{rootMargin:'-25% 0px -65% 0px'});
+    chapters.forEach(c=>io.observe(c));
+  }
+  /* checklists */
+  const cks=$$('input.ck');let saved=[];try{saved=JSON.parse(store.get(P+'ck')||'[]')}catch(e){}
+  function upd(){
+    let done=0;cks.forEach(c=>{if(c.checked)done++});
+    const pct=cks.length?Math.round(100*done/cks.length):0;
+    const t=$('#progTxt');if(t)t.textContent=pct+'% complete';const b=$('#progBar');if(b)b.style.width=pct+'%';
+    chapters.forEach(s=>{const c=$$('#'+s.id+' input.ck');const li=$('#railList li[data-for="'+s.id+'"]');if(!li)return;const d=c.filter(x=>x.checked).length;li.querySelector('.rc').textContent=c.length?d+'/'+c.length:'';li.classList.toggle('complete',c.length>0&&d===c.length)});
+    if(onChange)onChange();
+  }
+  cks.forEach((c,i)=>{c.checked=saved.includes(i);c.addEventListener('change',()=>{store.set(P+'ck',JSON.stringify(cks.map((x,j)=>x.checked?j:-1).filter(j=>j>=0)));upd()})});
+  /* saved fields */
+  $$('[data-save]').forEach(el=>{const v=store.get(P+el.dataset.save);if(v!==null)el.value=v;['input','change'].forEach(ev=>el.addEventListener(ev,()=>store.set(P+el.dataset.save,el.value)))});
+  upd();
+  return upd;
+}
+function copyText(text,btn){
+  const done=()=>{const o=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=o,1500)};
+  function fb(){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){btn.textContent='Select the text and copy it'}document.body.removeChild(ta)}
+  try{navigator.clipboard.writeText(text).then(done,fb)}catch(e){fb()}
+}
+
+(function(){
+const P='es173-lab3-v1-';
+initCommon(P);
+const NS='http://www.w3.org/2000/svg';
+const LIGHTS=[{k:'uv',name:'UV',nm:395,c:'--uv'},{k:'bl',name:'Blue',nm:465,c:'--bl'},{k:'gr',name:'Green',nm:525,c:'--gr'},{k:'rd',name:'Red',nm:630,c:'--rd'},{k:'ir',name:'IR',nm:850,c:'--ir'}];
+const MATS=[['Si',1.11],['Ge',0.66],['GaAs',1.43],['InP',1.27],['GaP',2.25],['GaN',3.40],['GaSb',0.68],['InAs',0.36],['InSb',0.17],['CdSe',1.74],['CdTe',1.44],['ZnO',3.20],['ZnS',3.60]];
+const IVMATS=['Si','Ge','GaSb','InP','GaAs','CdTe','CdSe','GaP','GaN'];
+const gapOf=n=>(MATS.find(m=>m[0]===n)||[0,1.11])[1];
+const f2=x=>x.toFixed(2);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* wavelength to a display color */
+function wlColor(w){
+  if(w<380)return 'var(--uv)';if(w>750)return 'var(--ir)';
+  let r=0,g=0,b=0;
+  if(w<440){r=-(w-440)/60;b=1}else if(w<490){g=(w-440)/50;b=1}else if(w<510){g=1;b=-(w-510)/20}else if(w<580){r=(w-510)/70;g=1}else if(w<645){r=1;g=-(w-645)/65}else{r=1}
+  const k=w<420?.35+.65*(w-380)/40:w>700?.35+.65*(750-w)/50:1;
+  const h=v=>Math.round(255*Math.pow(v*k,.8));return 'rgb('+h(r)+','+h(g)+','+h(b)+')';
+}
+function lightButtons(el,onPick,extra){
+  el.innerHTML=(extra?'<button type="button" data-k="off" aria-pressed="false">Off</button>':'')+LIGHTS.map(L=>'<button type="button" data-k="'+L.k+'" aria-pressed="false"><span class="sw" style="background:var('+L.c+')"></span>'+L.name+' <span class="muted" style="font-weight:400">'+L.nm+'</span></button>').join('');
+  el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>onPick(b.dataset.k)));
+}
+function pressLights(el,fn){el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(fn(b.dataset.k))))}
+function matOptions(sel,list,custom){sel.innerHTML=list.map(n=>'<option value="'+n+'">'+n+', '+f2(gapOf(n))+' eV</option>').join('')+(custom?'<option value="custom">Custom band gap</option>':'')}
+
+/* ---------- chapter 3, band gap explorer ---------- */
+const gWl=$('#gWl'),gMat=$('#gMat'),gCustom=$('#gCustom');
+matOptions(gMat,MATS.map(m=>m[0]),true);
+lightButtons($('#gLights'),k=>{const L=LIGHTS.find(x=>x.k===k);gWl.value=L.nm;drawGap()});
+function curGap(){return gMat.value==='custom'?Math.max(.1,parseFloat(gCustom.value)||1.5):gapOf(gMat.value)}
+function drawGap(){
+  const w=+gWl.value,E=1239.84/w,Eg=curGap(),name=gMat.value==='custom'?'This material':gMat.value,lc=1239.84/Eg,abs=E>=Eg;
+  $('#gWlOut').textContent=w+' nm';$('#gCustomWrap').hidden=gMat.value!=='custom';
+  pressLights($('#gLights'),k=>LIGHTS.find(x=>x.k===k).nm===w);
+  const col=wlColor(w),k=46,y0=262,cb=y0-Eg*k,tip=y0-E*k;
+  let s='<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:'+col+'"/></marker></defs>';
+  s+='<rect x="170" y="'+y0+'" width="300" height="30" style="fill:var(--vb);opacity:.22"/><line x1="170" y1="'+y0+'" x2="470" y2="'+y0+'" style="stroke:var(--vb);stroke-width:2"/>';
+  s+='<rect x="170" y="'+(cb-30)+'" width="300" height="30" style="fill:var(--cb);opacity:.22"/><line x1="170" y1="'+cb+'" x2="470" y2="'+cb+'" style="stroke:var(--cb);stroke-width:2"/>';
+  s+='<text x="178" y="'+(y0+20)+'" class="t">Valence band</text><text x="178" y="'+(cb-11)+'" class="t">Conduction band</text>';
+  s+='<line x1="490" y1="'+cb+'" x2="490" y2="'+y0+'" style="stroke:var(--ink);stroke-width:1.5"/><line x1="484" y1="'+cb+'" x2="496" y2="'+cb+'" style="stroke:var(--ink)"/><line x1="484" y1="'+y0+'" x2="496" y2="'+y0+'" style="stroke:var(--ink)"/>';
+  s+='<text x="486" y="'+((cb+y0)/2+4)+'" text-anchor="end" class="t">E<tspan baseline-shift="sub" font-size="9">g</tspan> '+f2(Eg)+' eV</text>';
+  // incoming photon
+  let p='M20 150';for(let x=20;x<=150;x+=2)p+=' L'+x+' '+(150+7*Math.sin((x-20)/5)).toFixed(1);
+  s+='<path d="'+p+'" fill="none" style="stroke:'+col+';stroke-width:2.5"/>';
+  s+='<text x="20" y="122" class="t">'+w+' nm photon</text><text x="20" y="182">'+f2(E)+' eV</text>';
+  if(abs){
+    s+='<line x1="300" y1="'+y0+'" x2="300" y2="'+(tip+6)+'" style="stroke:'+col+';stroke-width:3" marker-end="url(#ah)"/>';
+    s+='<circle cx="300" cy="'+tip+'" r="7" style="fill:var(--cb)"/>';
+    if(E-Eg>.03){s+='<path d="M308 '+(tip+3)+' C 350 '+(tip+4)+', 350 '+(cb-8)+', 380 '+(cb-7)+'" fill="none" style="stroke:var(--ink-2);stroke-dasharray:4 4;stroke-width:1.5"/><circle cx="388" cy="'+(cb-7)+'" r="7" style="fill:var(--cb)"/>';
+      s+='<text x="318" y="'+Math.max(16,tip-10)+'">loses '+f2(E-Eg)+' eV as heat</text>';}
+    s+='<circle cx="300" cy="'+(y0+10)+'" r="7" style="fill:var(--paper);stroke:var(--vb);stroke-width:2.5"/>';
+    s+='<text x="314" y="'+(y0+14)+'" class="t">hole</text><text x="'+(E-Eg>.03?400:314)+'" y="'+(cb-3)+'" class="t">electron</text>';
+  }else{
+    s+='<line x1="300" y1="'+y0+'" x2="300" y2="'+(tip+6)+'" style="stroke:'+col+';stroke-width:3;stroke-dasharray:5 4" marker-end="url(#ah)"/>';
+    s+='<text x="312" y="'+(tip+4)+'" class="t">not enough energy to cross</text>';
+    let q='M160 210';for(let x=160;x<=470;x+=2)q+=' L'+x+' '+(210+5*Math.sin((x-160)/5)).toFixed(1);
+    s+='<path d="'+q+'" fill="none" style="stroke:'+col+';stroke-width:1.5;opacity:.7"/><text x="470" y="234" text-anchor="end">passes through</text>';
+  }
+  $('#bandSvg').innerHTML=s;
+  $('#gVerdict').className='verdict '+(abs?'yes':'no');
+  $('#gVerdict').innerHTML='<span class="big">'+f2(E)+' eV</span>'+(abs?'Above the '+f2(Eg)+' eV gap. '+esc(name)+' can absorb this light and make electron and hole pairs.':'Below the '+f2(Eg)+' eV gap. '+esc(name)+' is transparent to this light, so it makes no photocurrent.')+' Cutoff for this gap is about <b>'+Math.round(lc)+' nm</b>.';
+  drawStrip(w,lc,name);
+}
+function drawStrip(w,lc,name){
+  const X=nm=>30+(nm-250)/1750*700;let s='';
+  for(let nm=250;nm<2000;nm+=5)s+='<rect x="'+X(nm).toFixed(1)+'" y="44" width="2.2" height="22" style="fill:'+wlColor(nm+2)+';opacity:'+(nm<380||nm>750?.35:1)+'"/>';
+  const xc=X(Math.min(2000,Math.max(250,lc)));
+  s+='<rect x="30" y="70" width="'+Math.max(0,xc-30).toFixed(1)+'" height="8" style="fill:var(--crimson)"/><rect x="'+xc.toFixed(1)+'" y="70" width="'+Math.max(0,730-xc).toFixed(1)+'" height="8" style="fill:var(--rule)"/>';
+  if(lc<=2000)s+='<line x1="'+xc+'" y1="38" x2="'+xc+'" y2="82" style="stroke:var(--ink);stroke-width:2"/>';
+  s+='<text x="'+Math.min(726,Math.max(34,xc)).toFixed(1)+'" y="95" text-anchor="'+(xc>600?'end':xc<120?'start':'middle')+'" class="t">'+(lc<=2000?'cutoff '+Math.round(lc)+' nm':'cutoff beyond 2000 nm')+'</text>';
+  LIGHTS.forEach((L,i)=>{const x=X(L.nm);s+='<path d="M'+(x-4)+' 34 L'+(x+4)+' 34 L'+x+' 42 Z" style="fill:var('+L.c+')"/><text x="'+x+'" y="'+(i%2?18:30)+'" text-anchor="middle" style="fill:var('+L.c+');font-weight:700">'+L.name+'</text>'});
+  const xw=X(w);s+='<circle cx="'+xw+'" cy="55" r="5" style="fill:var(--paper);stroke:var(--ink);stroke-width:2"/>';
+  [500,1000,1500,2000].forEach(t=>s+='<text x="'+X(t)+'" y="114" text-anchor="middle">'+t+' nm</text>');
+  s+='<text x="30" y="114">'+'250 nm'+'</text>';
+  $('#stripSvg').innerHTML=s;
+  $('#stripSvg').setAttribute('aria-label','Spectrum from 250 to 2000 nm. '+name+' absorbs below about '+Math.round(lc)+' nm.');
+}
+gWl.addEventListener('input',drawGap);gMat.addEventListener('change',drawGap);gCustom.addEventListener('input',drawGap);
+drawGap();
+
+/* ---------- chapter 4, absorption depth in Si ---------- */
+const SI=[[300,1.73e6],[340,1.07e6],[360,1.0e6],[370,6.9e5],[380,1.6e5],[390,1.2e5],[400,9.5e4],[420,5.0e4],[450,2.55e4],[500,1.11e4],[550,6.39e3],[600,4.14e3],[650,2.81e3],[700,1.9e3],[750,1.3e3],[800,850],[850,535],[900,306],[950,157],[1000,64],[1050,16.4],[1100,3.5],[1150,.3]];
+function alphaSi(w){for(let i=1;i<SI.length;i++){if(w<=SI[i][0]){const a=SI[i-1],b=SI[i],t=(w-a[0])/(b[0]-a[0]);return Math.exp(Math.log(a[1])+t*(Math.log(b[1])-Math.log(a[1])))}}return SI[SI.length-1][1]}
+const fmtLen=um=>um<1?Math.round(um*1000)+' nm':um<10?um.toFixed(1)+' µm':um<1e4?Math.round(um).toLocaleString()+' µm':(um/1e4).toFixed(1)+' cm';
+const dWl=$('#dWl');
+lightButtons($('#dLights'),k=>{dWl.value=LIGHTS.find(x=>x.k===k).nm;drawDepth()});
+function drawDepth(){
+  const w=+dWl.value,a=alphaSi(w),pd=1e4/a,col=wlColor(w);
+  $('#dWlOut').textContent=w+' nm';pressLights($('#dLights'),k=>LIGHTS.find(x=>x.k===k).nm===w);
+  $('#dAlpha').textContent=a>=1e3?(a/1e3).toFixed(a>=1e5?0:1)+'×10³ /cm':a.toFixed(a<10?1:0)+' /cm';
+  $('#dDepth').textContent=fmtLen(pd);
+  $('#dBars').innerHTML=[.1,1,10,100].map(d=>{const f=1-Math.exp(-a*d*1e-4);return'<div><span>'+fmtLen(d)+'</span><span class="bar"><i style="width:'+(100*f).toFixed(1)+'%"></i></span><b>'+(f>.995?'>99':Math.round(100*f))+'%</b></div>'}).join('');
+  const L=60,R=478,T=30,B=200,X=um=>L+(Math.log10(um)+2)/5*(R-L),Y=v=>B-v*(B-T);
+  let s='';
+  s+='<rect x="'+X(.01)+'" y="'+T+'" width="'+(X(.05)-X(.01))+'" height="'+(B-T)+'" style="fill:var(--stop-bg)"/><text x="'+(X(.01)+4)+'" y="'+(T+14)+'">surface</text>';
+  s+='<rect x="'+X(.3)+'" y="'+T+'" width="'+(X(1.5)-X(.3))+'" height="'+(B-T)+'" style="fill:var(--think-bg)"/><text x="'+((X(.3)+X(1.5))/2)+'" y="'+(T+14)+'" text-anchor="middle">junction, illustrative</text>';
+  [.01,.1,1,10,100,1000].forEach(t=>{s+='<line class="grid" x1="'+X(t)+'" y1="'+T+'" x2="'+X(t)+'" y2="'+B+'" style="stroke:var(--rule)"/><text x="'+X(t)+'" y="'+(B+18)+'" text-anchor="middle">'+(t<1?t+' µm':t+' µm')+'</text>'});
+  s+='<line x1="'+L+'" y1="'+B+'" x2="'+R+'" y2="'+B+'" style="stroke:var(--ink);stroke-width:1.5"/><line x1="'+L+'" y1="'+T+'" x2="'+L+'" y2="'+B+'" style="stroke:var(--ink);stroke-width:1.5"/>';
+  s+='<text x="'+L+'" y="'+(T-10)+'" class="t">Light left, I / I₀</text><text x="'+((L+R)/2)+'" y="'+(B+38)+'" text-anchor="middle" class="t">Depth into silicon, log scale</text>';
+  s+='<text x="'+(L-8)+'" y="'+(T+4)+'" text-anchor="end">1</text><text x="'+(L-8)+'" y="'+(B+4)+'" text-anchor="end">0</text>';
+  let p='M'+L+' '+Y(1);for(let i=0;i<=200;i++){const um=Math.pow(10,-2+5*i/200);p+=' L'+X(um).toFixed(1)+' '+Y(Math.exp(-a*um*1e-4)).toFixed(1)}
+  s+='<path d="'+p+' L'+R+' '+B+' L'+L+' '+B+' Z" style="fill:'+col+';opacity:.18"/><path d="'+p+'" fill="none" style="stroke:'+col+';stroke-width:3"/>';
+  if(pd>=.01&&pd<=1000){const x=X(pd);s+='<line x1="'+x+'" y1="'+T+'" x2="'+x+'" y2="'+B+'" style="stroke:var(--ink);stroke-dasharray:4 4"/><text x="'+(x+(x>400?-6:6))+'" y="'+(Y(.37)-8)+'" text-anchor="'+(x>400?'end':'start')+'" class="t">1/α = '+fmtLen(pd)+'</text>'}
+  $('#depthSvg').innerHTML=s;
+}
+dWl.addEventListener('input',drawDepth);drawDepth();
+
+/* ---------- chapter 5, IV simulator ---------- */
+const ivMat=$('#ivMat'),ivPow=$('#ivPow'),ivBias=$('#ivBias');let ivK='rd';
+matOptions(ivMat,IVMATS,false);
+lightButtons($('#ivLights'),k=>{ivK=k;drawIV()},true);
+const VT=.02585,NI=2,GSH=.01;
+function i0(Eg){return Math.min(30,1e-3*Math.exp((1.11-Eg)/(NI*VT)))}
+function iph(Eg,k,pow){if(k==='off')return 0;const L=LIGHTS.find(x=>x.k===k),lc=1239.84/Eg,qe=.8/(1+Math.exp((L.nm-lc)/20));return 50*(L.nm/1239.84)*qe*pow/100}
+const fmtI=u=>{const a=Math.abs(u);return a<1e-3?(u*1e6).toFixed(0)+' pA':a<1?(u*1e3).toFixed(a<.1?1:0)+' nA':u.toFixed(a<10?2:1)+' µA'};
+function drawIV(){
+  const Eg=gapOf(ivMat.value),I0=i0(Eg),Ip=iph(Eg,ivK,+ivPow.value),vb=+ivBias.value;
+  $('#ivPowOut').textContent=ivPow.value+'%';$('#ivBiasOut').textContent=(vb<0?'−':'')+Math.abs(vb).toFixed(1)+' V';
+  pressLights($('#ivLights'),k=>k===ivK);
+  const L=70,R=620,T=20,B=330,V0=-5,V1=1,IMIN=-40,IMAX=40;
+  const X=v=>L+(v-V0)/(V1-V0)*(R-L),Y=i=>B-(Math.max(IMIN,Math.min(IMAX,i))-IMIN)/(IMAX-IMIN)*(B-T);
+  const dark=v=>I0*(Math.exp(v/(NI*VT))-1)+GSH*v;
+  let s='';
+  for(let v=-5;v<=1;v++)s+='<line class="grid" x1="'+X(v)+'" y1="'+T+'" x2="'+X(v)+'" y2="'+B+'" style="stroke:var(--rule)"/><text x="'+X(v)+'" y="'+(B+18)+'" text-anchor="middle">'+(v<0?'−':'')+Math.abs(v)+'</text>';
+  for(let i=-40;i<=40;i+=20)s+='<line class="grid" x1="'+L+'" y1="'+Y(i)+'" x2="'+R+'" y2="'+Y(i)+'" style="stroke:var(--rule)"/><text x="'+(L-8)+'" y="'+(Y(i)+4)+'" text-anchor="end">'+(i<0?'−':'')+Math.abs(i)+'</text>';
+  s+='<line x1="'+L+'" y1="'+Y(0)+'" x2="'+R+'" y2="'+Y(0)+'" style="stroke:var(--ink);stroke-width:1.5"/><line x1="'+X(0)+'" y1="'+T+'" x2="'+X(0)+'" y2="'+B+'" style="stroke:var(--ink);stroke-width:1.5"/>';
+  s+='<text x="'+((L+R)/2)+'" y="'+(B+40)+'" text-anchor="middle" class="t">Diode voltage (V)</text><text transform="translate(18 '+((T+B)/2)+') rotate(-90)" text-anchor="middle" class="t">Current (µA)</text>';
+  s+='<text x="'+(L+8)+'" y="'+(T+14)+'">reverse bias</text><text x="'+(X(0)-6)+'" y="'+(T+14)+'" text-anchor="end">forward &#8594;</text>';
+  const path=f=>{let p='';for(let v=V0;v<=V1+1e-9;v+=.01){p+=(p?' L':'M')+X(v).toFixed(1)+' '+Y(f(v)).toFixed(1)}return p};
+  s+='<line x1="'+X(vb)+'" y1="'+T+'" x2="'+X(vb)+'" y2="'+B+'" style="stroke:var(--ink-2);stroke-dasharray:2 4;stroke-width:1.5"/>';
+  s+='<path d="'+path(dark)+'" fill="none" style="stroke:var(--ink-2);stroke-width:2.5"/>';
+  const L2=LIGHTS.find(x=>x.k===ivK);
+  if(Ip>0){const c='var('+L2.c+')';s+='<path d="'+path(v=>dark(v)-Ip)+'" fill="none" style="stroke:'+c+';stroke-width:3"/>';
+    if(Ip>1.5)s+='<line x1="'+(X(vb)+14)+'" y1="'+Y(dark(vb))+'" x2="'+(X(vb)+14)+'" y2="'+(Y(dark(vb)-Ip)-4)+'" style="stroke:'+c+';stroke-width:2" marker-end="url(#ivah)"/><text x="'+(X(vb)+22)+'" y="'+((Y(dark(vb))+Y(dark(vb)-Ip))/2+4)+'" class="t">I<tspan baseline-shift="sub" font-size="9">ph</tspan></text>';}
+  s='<defs><marker id="ivah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--ink)"/></marker></defs>'+s;
+  $('#ivSvg').innerHTML=s;
+  $('#ivLegDot').style.background=ivK==='off'?'var(--rule-2)':'var('+L2.c+')';$('#ivLegTxt').textContent=ivK==='off'?'Under light, choose a source':'Under '+L2.name+' light';
+  const d=dark(vb),l=d-Ip;$('#ivDark').textContent=fmtI(d);$('#ivLit').textContent=fmtI(l);$('#ivDelta').textContent=Ip?fmtI(Ip):'none';
+}
+[ivMat,ivPow,ivBias].forEach(e=>['input','change'].forEach(ev=>e.addEventListener(ev,drawIV)));drawIV();
+
+/* ---------- chapter 8, comparison table ---------- */
+const ROWS=[{k:'dark',name:'Dark, room light',c:'--ink-2'}].concat(LIGHTS);
+const tb=$('#cmpTbl tbody');
+tb.innerHTML=ROWS.map(r=>'<tr><th><span class="src"><i style="background:var('+r.c+')"></i>'+r.name+(r.nm?' <span class="muted" style="font-weight:400">~'+r.nm+' nm</span>':'')+'</span></th><td><input type="number" step="any" data-save="d1_'+r.k+'" aria-label="Device 1 current, '+r.name+'"></td><td id="d1c_'+r.k+'" class="muted">'+(r.k==='dark'?'reference':'')+'</td><td><input type="number" step="any" data-save="d2_'+r.k+'" aria-label="Device 2 current, '+r.name+'"></td><td id="d2c_'+r.k+'" class="muted">'+(r.k==='dark'?'reference':'')+'</td></tr>').join('');
+tb.querySelectorAll('input').forEach(el=>{const v=store.get(P+el.dataset.save);if(v!==null)el.value=v;el.addEventListener('input',()=>{store.set(P+el.dataset.save,el.value);cmp()})});
+['tUnit','tThr','tBias'].forEach(id=>$('#'+id).addEventListener('change',cmp));
+function devData(d){
+  const g=k=>{const v=parseFloat(tb.querySelector('[data-save="d'+d+'_'+k+'"]').value);return isFinite(v)?v:null};
+  const dark=g('dark');const ch=LIGHTS.map(L=>{const v=g(L.k);return{L,v,delta:(v!==null&&dark!==null)?Math.abs(v-dark):null}});
+  const mx=Math.max(0,...ch.map(c=>c.delta||0));return{dark,ch,mx};
+}
+function bracket(D,thr){
+  const got=D.ch.filter(c=>c.delta!==null);if(D.dark===null||!got.length)return null;
+  const resp=got.filter(c=>D.mx>0&&c.delta>=thr/100*D.mx);if(!resp.length)return{none:true};
+  const lL=Math.max(...resp.map(c=>c.L.nm)),hi=1239.84/lL;
+  const beyond=got.filter(c=>c.L.nm>lL&&!resp.includes(c)).map(c=>c.L.nm);
+  const lN=beyond.length?Math.min(...beyond):null,lo=lN?1239.84/lN:0;
+  const cands=MATS.filter(m=>m[1]<=hi&&m[1]>lo).map(m=>m[0]+' '+f2(m[1]));
+  return{resp,lL,lN,hi,lo,cands};
+}
+function cmp(){
+  const u=$('#tUnit').value,thr=+$('#tThr').value,D=[devData(1),devData(2)];
+  D.forEach((d,i)=>d.ch.forEach(c=>{const el=$('#d'+(i+1)+'c_'+c.L.k);el.textContent=c.delta===null?'':(+c.delta.toPrecision(3))+' '+u+(d.mx>0?' ('+Math.round(100*c.delta/d.mx)+'%)':'')}));
+  // chart
+  const W=640,H=250,L=50,R=620,T=20,B=200,gw=(R-L)/5,bw=gw*.32,Y=f=>B-f*(B-T);let s='';
+  [0,.25,.5,.75,1].forEach(f=>s+='<line class="grid" x1="'+L+'" y1="'+Y(f)+'" x2="'+R+'" y2="'+Y(f)+'"/><text x="'+(L-8)+'" y="'+(Y(f)+4)+'" text-anchor="end">'+Math.round(f*100)+'%</text>');
+  s+='<line class="grid" x1="'+L+'" y1="'+Y(thr/100)+'" x2="'+R+'" y2="'+Y(thr/100)+'" style="stroke:var(--crimson);stroke-dasharray:4 4"/>';
+  LIGHTS.forEach((Lg,j)=>{const cx=L+gw*j+gw/2;D.forEach((d,i)=>{const c=d.ch[j];if(c.delta===null||!d.mx)return;const f=c.delta/d.mx;s+='<rect x="'+(cx+(i?2:-bw-2))+'" y="'+Y(f)+'" width="'+bw+'" height="'+(B-Y(f))+'" style="fill:var('+(i?'--p':'--n')+')"/>'});
+    s+='<text x="'+cx+'" y="'+(B+18)+'" text-anchor="middle" class="t">'+Lg.name+'</text><text x="'+cx+'" y="'+(B+34)+'" text-anchor="middle">~'+Lg.nm+' nm</text>'});
+  s+='<line class="axis" x1="'+L+'" y1="'+B+'" x2="'+R+'" y2="'+B+'"/>';
+  $('#cmpChart').innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Bar chart of the change in current for each flashlight, both devices">'+s+'</svg>';
+  // brackets
+  $('#cmpRes').innerHTML=D.map((d,i)=>{const nm=i?'Device 2, mystery':'Device 1, Si',b=bracket(d,thr);const col=i?'var(--p)':'var(--n)';
+    if(!b)return'<div><b style="color:'+col+'">'+nm+'</b><p class="muted" style="margin:6px 0 0">Enter a dark value and at least one flashlight value.</p></div>';
+    if(b.none)return'<div><b style="color:'+col+'">'+nm+'</b><p class="muted" style="margin:6px 0 0">No response above the threshold yet.</p></div>';
+    const rng=b.lN?f2(b.lo)+' to '+f2(b.hi)+' eV':'at most '+f2(b.hi)+' eV';
+    return'<div><b style="color:'+col+'">'+nm+'</b><span class="big">'+rng+'</span><span class="muted">Responds to '+b.resp.map(c=>c.L.name).join(', ')+'. Longest responding source ~'+b.lL+' nm'+(b.lN?', first silent one ~'+b.lN+' nm.':'. No longer-wavelength source stayed silent, so this is only an upper limit.')+'</span><p style="margin:10px 0 0;font-size:.9rem">Appendix 2 materials in this range</p><ul class="matlist">'+(b.cands.length?b.cands.map(c=>'<li>'+c+' eV</li>').join(''):'<li>none, recheck your data</li>')+'</ul></div>'}).join('');
+}
+$('#cmpCsv').addEventListener('click',e=>{const u=$('#tUnit').value,D=[devData(1),devData(2)];let t='source,approx_nm,dev1_current_'+u+',dev2_current_'+u+'\n';t+='dark,,'+(D[0].dark??'')+','+(D[1].dark??'')+'\n';LIGHTS.forEach((L,j)=>t+=L.name+','+L.nm+','+(D[0].ch[j].v??'')+','+(D[1].ch[j].v??'')+'\n');copyText(t,e.currentTarget)});
+$('#cmpClear').addEventListener('click',()=>{if(!confirm('Clear every value in the comparison table?'))return;tb.querySelectorAll('input').forEach(el=>{el.value='';store.set(P+el.dataset.save,'')});cmp()});
+cmp();
+
+/* ---------- chapter 9, emission calculator ---------- */
+['eDev','ePk','eW'].forEach(id=>{const el=$('#'+id),v=store.get(P+id);if(v!==null)el.value=v;['input','change'].forEach(ev=>el.addEventListener(ev,()=>{store.set(P+id,el.value);emit()}))});
+function emit(){
+  const pk=parseFloat($('#ePk').value),fw=parseFloat($('#eW').value),o=$('#eOut');
+  if(!(pk>0)){o.innerHTML='<p class="muted">Enter a peak wavelength to see the photon energy.</p>';return}
+  const E=1239.84/pk,dE=fw>0?1239.84*fw/(pk*pk):null;
+  const near=MATS.map(m=>[m[0],m[1],Math.abs(m[1]-E)]).filter(m=>m[2]<=.15).sort((a,b)=>a[2]-b[2]);
+  let h='<dl class="stats"><div><dt>Photon energy at the peak</dt><dd>'+f2(E)+' eV</dd></div>'+(dE!==null?'<div><dt>Energy spread, FWHM</dt><dd>'+(dE<.01?(dE*1000).toFixed(1)+' meV':f2(dE)+' eV')+'</dd></div><div><dt>Relative width Δλ/λ</dt><dd>'+(100*fw/pk).toFixed(fw/pk<.01?2:1)+'%</dd></div>':'')+'</dl>';
+  h+='<p style="margin:0 0 4px">Appendix 2 materials within 0.15 eV of the peak</p><ul class="matlist">'+(near.length?near.map(m=>'<li>'+m[0]+' '+f2(m[1])+' eV</li>').join(''):'<li>none, consider an alloy</li>')+'</ul>';
+  if(fw>0&&fw<2)h+='<p class="muted" style="font-size:.9rem;margin-top:10px">A width this narrow may be set by the spectrometer’s resolution rather than the device. Ask your TF what the resolution is.</p>';
+  if(pk>1100)h+='<p class="muted" style="font-size:.9rem;margin-top:10px">This is past the 1100 nm limit of the lab spectrometer, so double check the reading.</p>';
+  o.innerHTML=h;
+}
+emit();
+
+/* ---------- chapter 10, report ---------- */
+const QS=[
+ ['Device 1, Si photodiode',10,'Observations for each light source','Record observations for each light source, showing the amount of light modulation you observe.','Show dark and lit IV curves for each flashlight on the same axes. Appendix 3 has each flashlight’s spectrum.'],
+ ['Device 1, Si photodiode',10,'Wavelength and modulation','Can you observe any relationship between the illumination wavelength and the strength of the modulation, the difference with light on and off?','Use chapter 8. Think about photons per watt and absorption depth, and about how bright each flashlight is.'],
+ ['Device 2, mystery photodiode',10,'Observations for each light source','Record observations for each light source, showing the amount of light modulation you observe.','Use the same distance, angle and bias as for Device 1 so the comparison is fair.'],
+ ['Device 2, mystery photodiode',10,'Wavelength and modulation','Can you observe any relationship between the illumination wavelength and the strength of the modulation?','Compare the pattern with Device 1. Where does each response start and stop?'],
+ ['Device 2, mystery photodiode',5,'What is it made of?','Make an inference about the material composition of the mystery photodiode based on your observations compared with the Si photodiode.','Bracket the band gap from your data, then compare with Appendix 2. The dark IV curve is a second clue.'],
+ ['Station 1, LED',10,'Color and wavelength','What color light does this sample emit? What is the emission wavelength as measured by the spectrometer?','Include a spectrometer capture or photo. Convert the peak to energy.'],
+ ['Station 1, LED',10,'How broad?','How broad is the emission peak in wavelength, and how broad is it spatially?','Give a FWHM in nm and describe or photograph the glow.'],
+ ['Station 2, VCSEL',10,'Electrical comparison','How do the electrical characteristics of this device compare with those of the LEDs fabricated in ES177?','Compare turn-on voltage, the shape of the forward curve and current levels.'],
+ ['Station 2, VCSEL',10,'Optical comparison','How do the optical characteristics compare with the LEDs, for example the spatial profiles and the spectral profiles?','Compare how far each beam spreads in space and in wavelength.'],
+ ['Station 2, VCSEL',15,'What is it made of?','Make an inference about the material composition of the device based on your observations.','Use the emission calculator in chapter 9 and Appendix 2.'],
+ ['Wrap up',10,'Designing an efficient emitter','Even without knowing the details of device development, what would you recommend for an efficient device that gives the maximum photonic output at a particular wavelength?','Give your own definition of efficient and your reasons.']];
+$('#qList').innerHTML=QS.map(q=>'<article class="q"><div class="q-pts">'+q[1]+'<small>pts</small></div><div><span class="kicker">'+q[0]+'</span><h3>'+q[2]+'</h3><p>'+q[3]+'</p><p class="hint">'+q[4]+'</p></div></article>').join('');
+$('#buildRep').addEventListener('click',()=>{
+  const u=$('#tUnit').value,D=[devData(1),devData(2)];
+  let t='ES173 Lab 3 group report, light and semiconductor interactions\nGroup '+($('#grp').value||'(number)')+'\nMembers '+($('#members').value||'(add every member)')+'\n\nPrediction before the lab\n'+($('#pred').value||'(add your prediction)')+'\n\n';
+  t+='Current at '+($('#tBias').value||'-3')+' V, in '+u+'\nSource, Device 1 Si, Device 2 mystery\nDark, '+(D[0].dark??'')+', '+(D[1].dark??'')+'\n';
+  LIGHTS.forEach((L,j)=>t+=L.name+' (~'+L.nm+' nm), '+(D[0].ch[j].v??'')+', '+(D[1].ch[j].v??'')+'\n');
+  t+='\n';let sec='';
+  QS.forEach((q,i)=>{if(q[0]!==sec){sec=q[0];t+='== '+sec+' ==\n\n'}t+=(i+1)+'. '+q[2]+' ('+q[1]+' points)\n'+q[3]+'\n\n[Answer, with figures]\n\n'});
+  $('#repOut').value=t;
+});
+$('#copyRep').addEventListener('click',e=>{if(!$('#repOut').value)$('#buildRep').click();copyText($('#repOut').value,e.currentTarget)});
+
+/* redraw on theme change so SVG colors that use computed values stay right */
+try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{drawGap();drawDepth();drawIV();cmp()})}catch(e){}
+})();
+</script>
+</body>
+</html>
