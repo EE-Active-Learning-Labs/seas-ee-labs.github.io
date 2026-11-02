@@ -25,7 +25,7 @@ window.EE_COURSES = [
   {id:'es157',code:'ES 157'},
   {id:'es158',code:'ES 158'},
   {id:'es159',code:'ES 159'},
-  {id:'es173',code:'ES 173',title:'Introduction to Electronic and Photonic Devices',extras:[{label:'Lab 2 walkthrough, photoelectrochemical etching',href:'../es173-lab2/'}]},
+  {id:'es173',code:'ES 173',title:'Introduction to Electronic and Photonic Devices',extras:[{label:'Lab 2 walkthrough, photoelectrochemical etching',href:'../es173-lab2/'},{label:'Lab 3 walkthrough, light and semiconductor interactions',href:'../es173-lab3/'}]},
   {id:'es176',code:'ES 176'},
   {id:'es177',code:'ES 177'},
   {id:'es223',code:'ES 223'},
